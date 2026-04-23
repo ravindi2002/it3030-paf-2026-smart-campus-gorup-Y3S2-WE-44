@@ -1,0 +1,6 @@
+.env
+*.mv.db
+*.trace.db
+node_modules/
+dist/
+target/
