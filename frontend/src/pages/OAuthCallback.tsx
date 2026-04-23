@@ -12,9 +12,12 @@ export default function OAuthCallback() {
     if (token && user) {
       try {
         const userData = JSON.parse(decodeURIComponent(user));
+        console.log('OAuthCallback - User data received:', userData);
+        console.log('OAuthCallback - User role:', userData.role);
         localStorage.setItem('smartcampus_token', token);
         localStorage.setItem('smartcampus_user', JSON.stringify(userData));
-        navigate('/');
+        console.log('OAuthCallback - Stored user data:', JSON.parse(localStorage.getItem('smartcampus_user') || '{}'));
+        navigate('/admin/dashboard');
       } catch (err) {
         console.error('Failed to parse user data:', err);
         navigate('/login?error=oauth_failed');

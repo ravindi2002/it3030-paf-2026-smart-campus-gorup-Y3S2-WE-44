@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { authService } from '../services/authService';
 import { User } from '../types/User';
 
@@ -20,9 +20,10 @@ export const useAuth = () => {
     try {
       const data = await authService.login(username, password);
       localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify({ username: data.username }));
+      const userData = { username: data.username, role: data.role || 'USER' };
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
       setToken(data.token);
-      setUser({ username: data.username } as User);
+      setUser(userData as User);
       return true;
     } catch {
       setError('Invalid credentials');
@@ -43,5 +44,13 @@ export const useAuth = () => {
     return !!token;
   }, [token]);
 
-  return { user, token, loading, error, login, logout, isAuthenticated };
+  const hasRole = useCallback((role: string) => {
+    return user?.role === role;
+  }, [user]);
+
+  const canManageResources = useCallback(() => {
+    return user?.role === 'ADMIN' || user?.role === 'TECHNICIAN';
+  }, [user]);
+
+  return { user, token, loading, error, login, logout, isAuthenticated, hasRole, canManageResources };
 };

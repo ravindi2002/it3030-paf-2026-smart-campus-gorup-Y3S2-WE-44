@@ -21,4 +21,15 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findConflictingBookings(@Param("resourceId") Long resourceId,
                                          @Param("start") LocalDateTime start,
                                          @Param("end") LocalDateTime end);
+    
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN true ELSE false END FROM Booking b " +
+           "WHERE b.resource.id = :resourceId AND b.status = 'APPROVED' " +
+           "AND b.startTime <= :currentTime AND b.endTime >= :currentTime")
+    boolean existsActiveBooking(@Param("resourceId") Long resourceId, 
+                               @Param("currentTime") LocalDateTime currentTime);
+    
+    @Query("SELECT b FROM Booking b WHERE b.resource.id = :resourceId AND b.status = 'APPROVED' " +
+           "AND b.startTime <= :currentTime AND b.endTime >= :currentTime")
+    List<Booking> findActiveBookingsForResource(@Param("resourceId") Long resourceId,
+                                               @Param("currentTime") LocalDateTime currentTime);
 }

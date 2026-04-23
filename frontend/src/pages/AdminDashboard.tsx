@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [usersRes, ticketsRes, resourcesRes] = await Promise.all([api.get('/users'), api.get('/tickets'), api.get('/resources')]);
+      const [usersRes, ticketsRes, resourcesRes] = await Promise.all([api.get('/admin/users'), api.get('/admin/tickets'), api.get('/admin/resources')]);
       const tickets = ticketsRes.data;
       const resources = resourcesRes.data;
       setStats({ totalUsers: usersRes.data.length, totalTickets: tickets.length, openTickets: tickets.filter((t: any) => t.status === 'OPEN').length, resolvedTickets: tickets.filter((t: any) => t.status === 'RESOLVED').length, totalResources: resources.length, availableResources: resources.filter((r: any) => r.status === 'AVAILABLE').length });
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
         <div className="bg-white p-6 rounded-lg shadow"><p className="text-gray-500 text-sm">Resolved</p><p className="text-3xl font-bold text-green-600">{stats.resolvedTickets}</p></div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <Link to="/admin/resources" className="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:scale-105 cursor-pointer"><p className="text-gray-500 text-sm">Total Resources</p><p className="text-3xl font-bold text-teal-600">{stats.totalResources}</p></Link>
+        <Link to="/resources" className="bg-white p-6 rounded-lg shadow hover:shadow-lg hover:scale-105 cursor-pointer"><p className="text-gray-500 text-sm">Total Resources</p><p className="text-3xl font-bold text-teal-600">{stats.totalResources}</p></Link>
         <div className="bg-white p-6 rounded-lg shadow"><p className="text-gray-500 text-sm">Available</p><p className="text-3xl font-bold text-green-600">{stats.availableResources}</p></div>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -60,7 +60,7 @@ export default function AdminDashboard() {
           <Link to="/tickets/create" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Create Ticket</Link>
           <Link to="/admin/tickets" className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 transition">Manage Tickets</Link>
           <Link to="/admin/users" className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition">Manage Users</Link>
-          <Link to="/admin/resources" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition">Manage Resources</Link>
+          <Link to="/resources" className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-700 transition">Manage Resources</Link>
         </div>
       </div>
     </div>
