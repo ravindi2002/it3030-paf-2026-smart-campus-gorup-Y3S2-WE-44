@@ -1,5 +1,6 @@
 package com.smartcampus.api.util;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -9,11 +10,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
+@Component
 public class FileUploadUtil {
 
     private static final String UPLOAD_DIR = "uploads/";
 
-    public static String saveFile(MultipartFile file) throws IOException {
+    public String saveFile(MultipartFile file) throws IOException {
         Path uploadPath = Paths.get(UPLOAD_DIR);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
@@ -32,7 +34,7 @@ public class FileUploadUtil {
         return fileName;
     }
 
-    public static void deleteFile(String fileName) {
+    public void deleteFile(String fileName) {
         try {
             Path filePath = Paths.get(UPLOAD_DIR).resolve(fileName);
             Files.deleteIfExists(filePath);
@@ -41,7 +43,7 @@ public class FileUploadUtil {
         }
     }
 
-    public static boolean isImage(MultipartFile file) {
+    public boolean isImage(MultipartFile file) {
         String contentType = file.getContentType();
         return contentType != null && contentType.startsWith("image/");
     }

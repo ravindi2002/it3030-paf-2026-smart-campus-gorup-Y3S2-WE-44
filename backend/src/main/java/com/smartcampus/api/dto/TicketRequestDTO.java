@@ -1,7 +1,6 @@
 package com.smartcampus.api.dto;
 
 import com.smartcampus.api.enums.Priority;
-import com.smartcampus.api.enums.TicketStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
