@@ -27,7 +27,7 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
 
   return (
     <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusStyles()}`}>
-      {status.replace(/_/g, ' ')}
+      {status?.replace(/_/g, ' ')}
     </span>
   );
 }

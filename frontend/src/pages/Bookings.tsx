@@ -1,22 +1,13 @@
 import { useState, useEffect } from 'react';
-import { bookingService } from '../services/bookingService';
-import { Booking } from '../types/Booking';
-import BookingCard from '../components/BookingCard';
+import api from '../utils/api';
 
 export default function Bookings() {
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    bookingService.getAll().then(setBookings).finally(() => setLoading(false));
+    api.get('/bookings').then(res => setBookings(res.data)).finally(() => setLoading(false));
   }, []);
-
-  const handleCancel = async (id: number) => {
-    if (confirm('Cancel this booking?')) {
-      await bookingService.updateStatus(id, 'CANCELLED');
-      setBookings(prev => prev.map(b => b.id === id ? { ...b, status: 'CANCELLED' } : b));
-    }
-  };
 
   return (
     <div className="p-6">
@@ -26,12 +17,14 @@ export default function Bookings() {
           New Booking
         </a>
       </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
+      {loading ? <p>Loading...</p> : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {bookings.map(booking => (
-            <BookingCard key={booking.id} booking={booking} onCancel={handleCancel} />
+          {bookings.map(b => (
+            <div key={b.id} className="bg-white p-4 rounded-lg shadow">
+              <h3 className="font-semibold">{b.resourceName}</h3>
+              <p className="text-gray-600 text-sm">{b.userName}</p>
+              <p className="text-sm text-gray-500 mt-2">{b.status}</p>
+            </div>
           ))}
         </div>
       )}

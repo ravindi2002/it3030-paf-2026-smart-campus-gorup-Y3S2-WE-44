@@ -1,7 +1,6 @@
 package com.smartcampus.api.controller;
 
 import com.smartcampus.api.util.FileUploadUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,15 +14,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/upload")
-@RequiredArgsConstructor
 public class UploadController {
-
-    private final FileUploadUtil fileUploadUtil;
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
-            String fileName = fileUploadUtil.saveFile(file);
+            String fileName = FileUploadUtil.saveFile(file);
             String url = "http://localhost:8080/uploads/" + fileName;
 
             Map<String, Object> response = new HashMap<>();
@@ -44,7 +40,7 @@ public class UploadController {
         for (MultipartFile file : files) {
             if (count >= 3) break;
             try {
-                String fileName = fileUploadUtil.saveFile(file);
+                String fileName = FileUploadUtil.saveFile(file);
                 String url = "http://localhost:8080/uploads/" + fileName;
                 
                 Map<String, String> response = new HashMap<>();
@@ -62,7 +58,7 @@ public class UploadController {
 
     @DeleteMapping("/{fileName}")
     public ResponseEntity<Void> deleteFile(@PathVariable String fileName) {
-        fileUploadUtil.deleteFile(fileName);
+        FileUploadUtil.deleteFile(fileName);
         return ResponseEntity.noContent().build();
     }
 }

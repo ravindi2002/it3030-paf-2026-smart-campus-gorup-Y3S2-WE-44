@@ -24,7 +24,7 @@ export const useAuth = () => {
       setToken(data.token);
       setUser({ username: data.username } as User);
       return true;
-    } catch (err) {
+    } catch {
       setError('Invalid credentials');
       return false;
     } finally {

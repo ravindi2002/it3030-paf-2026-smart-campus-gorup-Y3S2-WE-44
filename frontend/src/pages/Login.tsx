@@ -48,9 +48,6 @@ export default function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account? Contact admin.
-        </p>
       </div>
     </div>
   );

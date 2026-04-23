@@ -1,22 +1,13 @@
 import { useState, useEffect } from 'react';
-import { resourceService } from '../services/resourceService';
-import { Resource } from '../types/Resource';
-import ResourceCard from '../components/ResourceCard';
+import api from '../utils/api';
 
 export default function Resources() {
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    resourceService.getAll().then(setResources).finally(() => setLoading(false));
+    api.get('/resources').then(res => setResources(res.data)).finally(() => setLoading(false));
   }, []);
-
-  const handleDelete = async (id: number) => {
-    if (confirm('Delete this resource?')) {
-      await resourceService.delete(id);
-      setResources(prev => prev.filter(r => r.id !== id));
-    }
-  };
 
   return (
     <div className="p-6">
@@ -26,12 +17,13 @@ export default function Resources() {
           Add Resource
         </a>
       </div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
+      {loading ? <p>Loading...</p> : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {resources.map(resource => (
-            <ResourceCard key={resource.id} resource={resource} onDelete={handleDelete} />
+          {resources.map(r => (
+            <div key={r.id} className="bg-white p-4 rounded-lg shadow">
+              <h3 className="font-semibold">{r.name}</h3>
+              <p className="text-gray-600 text-sm">{r.location}</p>
+            </div>
           ))}
         </div>
       )}

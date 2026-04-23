@@ -1,36 +1,37 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Sidebar() {
-  const location = useLocation();
-
-  const isActive = (path: string) => location.pathname === path;
-
-  const navItems = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/resources', label: 'Resources' },
-    { path: '/bookings', label: 'Bookings' },
-    { path: '/tickets', label: 'Tickets' },
-    { path: '/notifications', label: 'Notifications' },
-  ];
-
   return (
-    <aside className="w-64 bg-gray-100 min-h-screen p-4">
-      <ul className="space-y-2">
-        {navItems.map(item => (
-          <li key={item.path}>
-            <Link
-              to={item.path}
-              className={`block p-3 rounded ${
-                isActive(item.path)
-                  ? 'bg-blue-600 text-white'
-                  : 'hover:bg-gray-200'
-              }`}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
+    <div className="w-64 bg-blue-900 text-white min-h-screen p-5">
+      <h2 className="text-xl font-bold mb-5">Smart Campus</h2>
+      <ul className="space-y-3">
+        <li>
+          <Link to="/" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
+            Dashboard
+          </Link>
+        </li>
+        <li>
+          <Link to="/resources" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
+            Resources
+          </Link>
+        </li>
+        <li>
+          <Link to="/bookings" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
+            Bookings
+          </Link>
+        </li>
+        <li>
+          <Link to="/tickets" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
+            Tickets
+          </Link>
+        </li>
+        <li>
+          <Link to="/notifications" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
+            Notifications
+          </Link>
+        </li>
       </ul>
-    </aside>
+    </div>
   );
 }

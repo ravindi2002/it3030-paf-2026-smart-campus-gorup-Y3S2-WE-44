@@ -6,23 +6,28 @@ export const ROLES = {
   TECHNICIAN: 'TECHNICIAN',
 } as const;
 
-export const TICKET_CATEGORIES = [
-  'Electrical',
-  'Plumbing',
-  'HVAC',
-  'Furniture',
-  'IT Equipment',
-  'Cleaning',
-  'Security',
-  'Other',
-] as const;
+export const TICKET_STATUS = {
+  OPEN: 'OPEN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  RESOLVED: 'RESOLVED',
+  CLOSED: 'CLOSED',
+  REJECTED: 'REJECTED',
+} as const;
 
-export const RESOURCE_TYPES = [
-  'Classroom',
-  'Lab',
-  'Auditorium',
-  'Meeting Room',
-  'Sports Facility',
-  'Library',
-  'Other',
-] as const;
+export const PRIORITY = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+} as const;
+
+export const BOOKING_STATUS = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED',
+} as const;
+
+export const RESOURCE_STATUS = {
+  ACTIVE: 'ACTIVE',
+  OUT_OF_SERVICE: 'OUT_OF_SERVICE',
+} as const;
