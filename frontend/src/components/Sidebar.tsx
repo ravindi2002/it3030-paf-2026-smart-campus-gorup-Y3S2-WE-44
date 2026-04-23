@@ -1,36 +1,43 @@
-import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { Link, useLocation } from 'react-router-dom';
 
-export default function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+}
+
+export default function Sidebar({ isOpen }: SidebarProps) {
+  if (!isOpen) return null;
+
+  const location = useLocation();
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = [
+    { path: '/', label: 'Dashboard' },
+    { path: '/resources', label: 'Resources' },
+    { path: '/bookings', label: 'Bookings' },
+    { path: '/tickets', label: 'Tickets' },
+    { path: '/notifications', label: 'Notifications' },
+  ];
+
   return (
     <div className="w-64 bg-blue-900 text-white min-h-screen p-5">
-      <h2 className="text-xl font-bold mb-5">Smart Campus</h2>
-      <ul className="space-y-3">
-        <li>
-          <Link to="/" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
-            Dashboard
-          </Link>
-        </li>
-        <li>
-          <Link to="/resources" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
-            Resources
-          </Link>
-        </li>
-        <li>
-          <Link to="/bookings" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
-            Bookings
-          </Link>
-        </li>
-        <li>
-          <Link to="/tickets" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
-            Tickets
-          </Link>
-        </li>
-        <li>
-          <Link to="/notifications" className="block py-2 px-3 rounded hover:bg-blue-800 transition">
-            Notifications
-          </Link>
-        </li>
+      
+      
+      <ul className="space-y-2">
+        {navItems.map(item => (
+          <li key={item.path}>
+            <Link
+              to={item.path}
+              className={`block p-3 rounded transition ${
+                isActive(item.path)
+                  ? 'bg-blue-700'
+                  : 'hover:bg-blue-800'
+              }`}
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );

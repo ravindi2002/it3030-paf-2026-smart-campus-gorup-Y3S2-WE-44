@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import AppRoutes from './routes/AppRoutes';
 
-function App() {
+export default function App() {
+  const [isOpen, setIsOpen] = useState(true);
+
   return (
     <div className="flex h-screen">
-      <Sidebar />
+      <Sidebar isOpen={isOpen} />
       <div className="flex-1 flex flex-col">
-        <Navbar />
+        <Navbar toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
         <div className="p-6 bg-gray-100 flex-1 overflow-auto">
           <AppRoutes />
         </div>
@@ -15,5 +18,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
