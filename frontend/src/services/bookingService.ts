@@ -57,12 +57,6 @@ export const bookingService = {
     return response.data;
   },
 
-  // Update booking
-  async updateBooking(id: number, bookingData: BookingRequest): Promise<Booking> {
-    const response = await api.put(`/bookings/${id}`, bookingData);
-    return response.data;
-  },
-
   // Delete booking
   async deleteBooking(id: number): Promise<void> {
     await api.delete(`/bookings/${id}`);

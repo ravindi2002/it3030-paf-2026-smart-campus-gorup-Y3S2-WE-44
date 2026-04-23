@@ -37,8 +37,7 @@ export default function TicketsIncident({ userId = 1, isAdmin = false }: Tickets
   const [priorityFilter, setPriorityFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [formData, setFormData] = useState<Partial<Ticket>>({});
+    const [formData, setFormData] = useState<Partial<Ticket>>({});
 
   useEffect(() => {
     fetchTickets();
@@ -265,23 +264,7 @@ export default function TicketsIncident({ userId = 1, isAdmin = false }: Tickets
     }
   };
 
-  const getCategoryIcon = (category: Ticket['category']) => {
-    switch (category) {
-      case 'facility':
-        return '🏢';
-      case 'equipment':
-        return '🔧';
-      case 'booking':
-        return '📅';
-      case 'access':
-        return '🔑';
-      case 'other':
-        return '📋';
-      default:
-        return '📋';
-    }
-  };
-
+  
   const filteredTickets = getFilteredTickets();
 
   if (loading) {
@@ -471,7 +454,6 @@ export default function TicketsIncident({ userId = 1, isAdmin = false }: Tickets
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => setSelectedTicket(ticket)}
                       className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
                     >
                       👁️ View

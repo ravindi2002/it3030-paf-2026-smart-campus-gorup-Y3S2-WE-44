@@ -51,26 +51,7 @@ export default function MobileResponsive() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const getResponsiveClasses = (baseClasses: string, mobileClasses?: string, tabletClasses?: string, desktopClasses?: string) => {
-    const classes = [baseClasses];
-    
-    if (config.isMobile && mobileClasses) {
-      classes.push(mobileClasses);
-    } else if (config.isTablet && tabletClasses) {
-      classes.push(tabletClasses);
-    } else if (config.isDesktop && desktopClasses) {
-      classes.push(desktopClasses);
-    }
-    
-    return classes.join(' ');
-  };
-
-  const getResponsiveValue = <T>(mobile: T, tablet: T, desktop: T): T => {
-    if (config.isMobile) return mobile;
-    if (config.isTablet) return tablet;
-    return desktop;
-  };
-
+  
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}

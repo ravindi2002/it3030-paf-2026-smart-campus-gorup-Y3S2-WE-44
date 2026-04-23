@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface AccessibilityFeature {
   id: string;
@@ -10,7 +10,7 @@ interface AccessibilityFeature {
 }
 
 export default function AccessibilityFeatures() {
-  const [features, setFeatures] = useState<AccessibilityFeature[]>([
+  const [features] = useState<AccessibilityFeature[]>([
     {
       id: '1',
       name: 'Semantic HTML',

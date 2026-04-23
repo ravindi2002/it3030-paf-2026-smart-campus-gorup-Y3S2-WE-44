@@ -39,8 +39,7 @@ export default function RoleBasedAccess() {
   const [roles, setRoles] = useState<Role[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [roleAssignments, setRoleAssignments] = useState<RoleAssignment[]>([]);
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
