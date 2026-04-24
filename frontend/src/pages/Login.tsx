@@ -8,6 +8,7 @@ export default function Login() {
   const { login, loading, error } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [localError, setLocalError] = useState('');
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -17,12 +18,14 @@ export default function Login() {
         const userData = JSON.parse(decodeURIComponent(user));
         localStorage.setItem('smartcampus_token', token);
         localStorage.setItem('smartcampus_user', JSON.stringify(userData));
-        navigate('/');
+        // Force page reload to reinitialize auth state
+        window.location.href = '/';
       } catch (err) {
         console.error('Failed to parse user data:', err);
+        setLocalError('Login failed. Please try again.');
       }
     }
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,7 +41,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h1 className="text-2xl font-bold mb-6 text-center">Smart Campus Login</h1>
-        {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
+        {(error || localError) && <p className="text-red-600 mb-4 text-center">{error || localError}</p>}
         
         <button
           onClick={handleGoogleLogin}
