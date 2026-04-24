@@ -170,19 +170,7 @@ export default function StudentResources() {
                   Available
                 </div>
               </div>
-              {resource.imageUrl && (
-                <div className="mt-3">
-                  <img 
-                    src={resource.imageUrl} 
-                    alt={resource.name}
-                    className="w-full h-32 object-cover rounded-md"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+                          </div>
           ))}
         </div>
       )}

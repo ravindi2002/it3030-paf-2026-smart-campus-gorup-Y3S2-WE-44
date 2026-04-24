@@ -24,8 +24,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-      api.get('/resources'),
-      api.get('/bookings'),
+      api.get('/admin/resources/public/resources'),
+      api.get('/admin/bookings/public/bookings'),
       api.get('/tickets'),
     ]).then(([resources, bookings, tickets]) => {
       setStats({

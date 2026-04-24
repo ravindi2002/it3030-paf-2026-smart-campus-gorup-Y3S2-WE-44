@@ -130,4 +130,22 @@ public class ResourceController {
         resourceService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    // Public endpoints for students
+    @GetMapping("/public/resources")
+    public ResponseEntity<List<ResourceDTO>> getPublicResources(
+            @RequestParam(required = false) ResourceStatus status) {
+        List<ResourceDTO> resources = status != null
+                ? resourceService.getByStatus(status)
+                : resourceService.getAll();
+        return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/public/resources/search")
+    public ResponseEntity<List<ResourceDTO>> searchPublicResources(
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String location) {
+        List<ResourceDTO> resources = resourceService.search(type, location);
+        return ResponseEntity.ok(resources);
+    }
 }
