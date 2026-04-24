@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/api/admin/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 
@@ -77,5 +77,24 @@ public class BookingController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         bookingService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Public endpoints for students
+    @GetMapping("/public/bookings")
+    public ResponseEntity<List<BookingDTO>> getPublicBookings(
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Long resourceId,
+            @RequestParam(required = false) BookingStatus status) {
+        List<BookingDTO> bookings;
+        if (userId != null) {
+            bookings = bookingService.getByUserId(userId);
+        } else if (resourceId != null) {
+            bookings = bookingService.getByResourceId(resourceId);
+        } else if (status != null) {
+            bookings = bookingService.getByStatus(status);
+        } else {
+            bookings = bookingService.getAll();
+        }
+        return ResponseEntity.ok(bookings);
     }
 }

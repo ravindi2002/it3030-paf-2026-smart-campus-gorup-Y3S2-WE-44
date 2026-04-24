@@ -42,7 +42,8 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
@@ -57,30 +58,17 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/register").permitAll()
                         .requestMatchers("/api/uploads/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/oauth2/**").permitAll()
-                        .requestMatchers("/oauth2/authorization/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
-                        .requestMatchers("/api/tickets/**").hasAnyRole("USER", "ADMIN", "TECHNICIAN")
-                        .requestMatchers("/api/bookings/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/resources/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/notifications/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth -> oauth
+                .oauth2Login(oauth2 -> oauth2
                         .successHandler(oauthSuccessHandler)
-                        .failureHandler((request, response, exception) -> {
-                            try {
-                                response.sendRedirect("http://localhost:5173/login?error=oauth_failed");
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
+                        .failureUrl("/api/auth/oauth2/failure")
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider())

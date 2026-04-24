@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -63,5 +65,22 @@ public class AuthController {
         response.put("authorities", authentication.getAuthorities());
         
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/oauth2/success")
+    public ResponseEntity<Map<String, Object>> oauth2Success(@AuthenticationPrincipal OAuth2User oauth2User) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "OAuth2 login successful");
+        response.put("user", oauth2User.getAttributes());
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/oauth2/failure")
+    public ResponseEntity<Map<String, Object>> oauth2Failure() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "OAuth2 login failed");
+        
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
