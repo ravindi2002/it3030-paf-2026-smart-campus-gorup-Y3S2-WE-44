@@ -74,10 +74,7 @@ public class ResourceService {
         @NonNull Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
-        if (resource.getStatus() == ResourceStatus.OUT_OF_SERVICE) {
-            throw new IllegalStateException("Cannot change status of out of service resource");
-        }
-
+        // Allow status changes for all resources (including OUT_OF_SERVICE)
         resource.setStatus(status);
         Resource updated = resourceRepository.save(resource);
         return mapToDTO(updated);

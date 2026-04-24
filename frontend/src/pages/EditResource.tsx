@@ -215,8 +215,7 @@ export default function EditResource() {
                         name="status"
                         value={formData.status}
                         onChange={handleChange}
-                        disabled={formData.status === 'OUT_OF_SERVICE'}
-                        className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-all duration-200 appearance-none"
+                        className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none"
                       >
                         <option value="ACTIVE">ACTIVE</option>
                         <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
@@ -228,14 +227,12 @@ export default function EditResource() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
-                    {formData.status === 'OUT_OF_SERVICE' && (
-                      <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z" />
-                        </svg>
-                        Resources marked as OUT_OF_SERVICE cannot be edited
-                      </p>
-                    )}
+                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      You can change the status between ACTIVE and OUT_OF_SERVICE
+                    </p>
                   </div>
 
                   {/* Form Actions */}
