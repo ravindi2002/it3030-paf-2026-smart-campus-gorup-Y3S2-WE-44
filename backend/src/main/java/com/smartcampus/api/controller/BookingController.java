@@ -5,11 +5,13 @@ import com.smartcampus.api.enums.BookingStatus;
 import com.smartcampus.api.service.BookingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -37,16 +39,24 @@ public class BookingController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingDTO> approve(@PathVariable Long id,
                                               @RequestParam(required = false) Long approvedById) {
-        BookingDTO approved = bookingService.updateStatus(id, BookingStatus.APPROVED, approvedById);
+        BookingDTO approved = bookingService.updateStatus(id, BookingStatus.APPROVED, approvedById, null);
         return ResponseEntity.ok(approved);
     }
 
     @PutMapping("/{id}/reject")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookingDTO> reject(@PathVariable Long id,
-                                              @RequestParam(required = false) Long approvedById) {
-        BookingDTO rejected = bookingService.updateStatus(id, BookingStatus.REJECTED, approvedById);
+                                              @RequestParam(required = false) Long approvedById,
+                                              @RequestParam(required = false) String rejectionReason) {
+        BookingDTO rejected = bookingService.updateStatus(id, BookingStatus.REJECTED, approvedById, rejectionReason);
         return ResponseEntity.ok(rejected);
+    }
+
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<BookingDTO> cancel(@PathVariable Long id,
+                                             @RequestParam Long userId) {
+        BookingDTO cancelled = bookingService.cancelBooking(id, userId);
+        return ResponseEntity.ok(cancelled);
     }
 
     @GetMapping("/{id}")
@@ -59,9 +69,17 @@ public class BookingController {
     public ResponseEntity<List<BookingDTO>> getAll(
             @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Long resourceId,
-            @RequestParam(required = false) BookingStatus status) {
+            @RequestParam(required = false) BookingStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         List<BookingDTO> bookings;
-        if (userId != null) {
+        if (startDate != null && endDate != null) {
+            if (resourceId != null) {
+                bookings = bookingService.getByResourceAndDateRange(resourceId, startDate, endDate);
+            } else {
+                bookings = bookingService.getByDateRange(startDate, endDate);
+            }
+        } else if (userId != null) {
             bookings = bookingService.getByUserId(userId);
         } else if (resourceId != null) {
             bookings = bookingService.getByResourceId(resourceId);

@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,18 +32,20 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Resource resource = resourceRepository.findById(dto.getResourceId())
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
-        
+
         validateBookingTimes(dto);
-        
+        validateNoConflict(dto.getResourceId(), dto.getStartTime(), dto.getEndTime());
+
         Booking booking = Booking.builder()
                 .user(user)
                 .resource(resource)
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
                 .purpose(dto.getPurpose())
+                .expectedAttendees(dto.getExpectedAttendees())
                 .status(BookingStatus.PENDING)
                 .build();
-        
+
         Booking saved = bookingRepository.save(booking);
         return mapToDTO(saved);
     }
@@ -50,24 +53,30 @@ public class BookingService {
     public BookingDTO update(Long id, BookingDTO dto) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-        
+
         booking.setStartTime(dto.getStartTime());
         booking.setEndTime(dto.getEndTime());
         booking.setPurpose(dto.getPurpose());
-        
+        booking.setExpectedAttendees(dto.getExpectedAttendees());
+
         Booking updated = bookingRepository.save(booking);
         return mapToDTO(updated);
     }
 
-    public BookingDTO updateStatus(Long id, BookingStatus status, Long approvedById) {
+    public BookingDTO updateStatus(Long id, BookingStatus status, Long approvedById, String rejectionReason) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
-        
+
+        validateStatusTransition(booking.getStatus(), status);
+
         booking.setStatus(status);
         if (approvedById != null) {
             booking.setApprovedBy(approvedById);
         }
-        
+        if (status == BookingStatus.REJECTED && rejectionReason != null) {
+            booking.setRejectionReason(rejectionReason);
+        }
+
         Booking updated = bookingRepository.save(booking);
         return mapToDTO(updated);
     }
@@ -107,6 +116,39 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingDTO> getByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return bookingRepository.findAll().stream()
+                .filter(booking -> booking.getStartTime().isAfter(startDate) && booking.getEndTime().isBefore(endDate))
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookingDTO> getByResourceAndDateRange(Long resourceId, LocalDateTime startDate, LocalDateTime endDate) {
+        return bookingRepository.findByResourceId(resourceId).stream()
+                .filter(booking -> booking.getStartTime().isAfter(startDate) && booking.getEndTime().isBefore(endDate))
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public BookingDTO cancelBooking(Long id, Long userId) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if (!booking.getUser().getId().equals(userId)) {
+            throw new ValidationException("You can only cancel your own bookings");
+        }
+
+        if (booking.getStatus() != BookingStatus.APPROVED && booking.getStatus() != BookingStatus.PENDING) {
+            throw new ValidationException("Only approved or pending bookings can be cancelled");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        Booking updated = bookingRepository.save(booking);
+        return mapToDTO(updated);
+    }
+
     public void delete(Long id) {
         if (!bookingRepository.existsById(id)) {
             throw new ResourceNotFoundException("Booking not found");
@@ -118,8 +160,30 @@ public class BookingService {
         if (dto.getEndTime().isBefore(dto.getStartTime())) {
             throw new ValidationException("End time must be after start time");
         }
-        if (dto.getStartTime().isBefore(java.time.LocalDateTime.now())) {
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Start time must be in the future");
+        }
+        if (dto.getExpectedAttendees() != null && dto.getExpectedAttendees() <= 0) {
+            throw new ValidationException("Expected attendees must be greater than 0");
+        }
+    }
+
+    private void validateNoConflict(Long resourceId, LocalDateTime startTime, LocalDateTime endTime) {
+        List<Booking> conflictingBookings = bookingRepository.findConflictingBookings(resourceId, startTime, endTime);
+        if (!conflictingBookings.isEmpty()) {
+            throw new ValidationException("Resource is already booked for the selected time period");
+        }
+    }
+
+    private void validateStatusTransition(BookingStatus currentStatus, BookingStatus newStatus) {
+        if (currentStatus == BookingStatus.CANCELLED) {
+            throw new ValidationException("Cannot change status of a cancelled booking");
+        }
+        if (currentStatus == BookingStatus.REJECTED && newStatus != BookingStatus.PENDING) {
+            throw new ValidationException("Rejected bookings can only be set back to pending");
+        }
+        if (currentStatus == BookingStatus.APPROVED && newStatus == BookingStatus.PENDING) {
+            throw new ValidationException("Approved bookings cannot be set back to pending");
         }
     }
 
@@ -133,6 +197,8 @@ public class BookingService {
                 .startTime(booking.getStartTime())
                 .endTime(booking.getEndTime())
                 .purpose(booking.getPurpose())
+                .expectedAttendees(booking.getExpectedAttendees())
+                .rejectionReason(booking.getRejectionReason())
                 .status(booking.getStatus())
                 .createdAt(booking.getCreatedAt())
                 .updatedAt(booking.getUpdatedAt())

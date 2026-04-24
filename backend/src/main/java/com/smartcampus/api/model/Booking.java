@@ -35,6 +35,12 @@ public class Booking {
     @Column(columnDefinition = "TEXT")
     private String purpose;
 
+    @Column(name = "expected_attendees")
+    private Integer expectedAttendees;
+
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default

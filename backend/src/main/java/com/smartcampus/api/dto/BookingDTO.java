@@ -34,6 +34,10 @@ public class BookingDTO {
 
     private String purpose;
 
+    private Integer expectedAttendees;
+
+    private String rejectionReason;
+
     private BookingStatus status;
 
     private LocalDateTime createdAt;
