@@ -106,11 +106,19 @@ export default function Bookings() {
             <label className="block text-sm font-medium text-gray-700 mb-1">User ID</label>
             <input
               type="number"
+              min="1"
               value={filters.userId || ''}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                userId: e.target.value ? parseInt(e.target.value) : undefined
-              }))}
+              onChange={(e) => {
+                const value = e.target.value;
+                const numValue = value ? parseInt(value) : undefined;
+                // Only allow positive numbers
+                if (numValue === undefined || numValue > 0) {
+                  setFilters(prev => ({
+                    ...prev,
+                    userId: numValue
+                  }));
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter user ID"
             />
@@ -120,11 +128,19 @@ export default function Bookings() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Resource ID</label>
             <input
               type="number"
+              min="1"
               value={filters.resourceId || ''}
-              onChange={(e) => setFilters(prev => ({
-                ...prev,
-                resourceId: e.target.value ? parseInt(e.target.value) : undefined
-              }))}
+              onChange={(e) => {
+                const value = e.target.value;
+                const numValue = value ? parseInt(value) : undefined;
+                // Only allow positive numbers
+                if (numValue === undefined || numValue > 0) {
+                  setFilters(prev => ({
+                    ...prev,
+                    resourceId: numValue
+                  }));
+                }
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter resource ID"
             />

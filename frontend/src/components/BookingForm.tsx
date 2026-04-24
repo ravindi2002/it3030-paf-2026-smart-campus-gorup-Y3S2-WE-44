@@ -18,17 +18,9 @@ export default function BookingForm({
   initialData,
   onConflictCheck 
 }: BookingFormProps) {
-  const [formData, setFormData] = useState<BookingRequest>({
-    resourceId: initialData?.resourceId || 0,
-    startTime: initialData?.startTime || '',
-    endTime: initialData?.endTime || '',
-    purpose: initialData?.purpose || '',
-    expectedAttendees: initialData?.expectedAttendees || undefined,
-  });
-
+  const [formData, setFormData] = useState<Partial<BookingRequest>>(initialData || {});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [conflictWarning, setConflictWarning] = useState<string | null>(null);
-  const [checkingConflict, setCheckingConflict] = useState(false);
 
   // Check conflicts when relevant fields change
   useEffect(() => {
@@ -45,12 +37,10 @@ export default function BookingForm({
 
   const checkConflicts = async () => {
     if (!onConflictCheck || !formData.resourceId || !formData.startTime || !formData.endTime) {
-      setConflictWarning(null);
       return;
     }
 
     try {
-      setCheckingConflict(true);
       const hasConflict = await onConflictCheck(
         formData.resourceId, 
         formData.startTime, 
@@ -65,8 +55,6 @@ export default function BookingForm({
     } catch (err) {
       console.error('Error checking conflicts:', err);
       setConflictWarning(null);
-    } finally {
-      setCheckingConflict(false);
     }
   };
 
@@ -79,13 +67,13 @@ export default function BookingForm({
 
     if (!formData.startTime) {
       newErrors.startTime = 'Start time is required';
-    } else if (new Date(formData.startTime) <= new Date()) {
+    } else if (formData.startTime && new Date(formData.startTime) <= new Date()) {
       newErrors.startTime = 'Start time must be in the future';
     }
 
     if (!formData.endTime) {
       newErrors.endTime = 'End time is required';
-    } else if (new Date(formData.endTime) <= new Date(formData.startTime)) {
+    } else if (formData.endTime && formData.startTime && new Date(formData.endTime) <= new Date(formData.startTime)) {
       newErrors.endTime = 'End time must be after start time';
     }
 
@@ -104,8 +92,21 @@ export default function BookingForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log('Form submitted with data:', formData);
+    
     if (validateForm()) {
-      onSubmit(formData);
+      console.log('Form validation passed, submitting booking...');
+      // Ensure all required fields are present before submitting
+      const bookingData: BookingRequest = {
+        resourceId: formData.resourceId!,
+        startTime: formData.startTime!,
+        endTime: formData.endTime!,
+        purpose: formData.purpose!,
+        expectedAttendees: formData.expectedAttendees || 1
+      };
+      onSubmit(bookingData);
+    } else {
+      console.log('Form validation failed:', errors);
     }
   };
 
@@ -124,11 +125,16 @@ export default function BookingForm({
     }
   };
 
-  const formatDateTimeForInput = (dateTimeString: string) => {
+  const formatDateTimeForInput = (dateTimeString: string | undefined) => {
     if (!dateTimeString) return '';
     const date = new Date(dateTimeString);
     // Format as YYYY-MM-DDTHH:MM for datetime-local input
-    return date.toISOString().slice(0, 16);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   return (
@@ -238,7 +244,7 @@ export default function BookingForm({
           Purpose *
         </label>
         <textarea
-          value={formData.purpose}
+          value={formData.purpose || ''}
           onChange={(e) => handleChange('purpose', e.target.value)}
           rows={4}
           className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
