@@ -82,6 +82,12 @@ export default function Resources() {
       
       setResources(filteredResources);
       console.log('DEBUG: Final resources set:', filteredResources);
+      // Debug: Log all image URLs
+      filteredResources.forEach((resource: Resource) => {
+        if (resource.imageUrl) {
+          console.log('DEBUG: Resource with image URL:', resource.name, 'URL:', resource.imageUrl);
+        }
+      });
     } catch (error) {
       console.error('Error searching resources:', error);
     } finally {
@@ -219,6 +225,20 @@ export default function Resources() {
                   <option value="OUT_OF_SERVICE">OUT_OF_SERVICE</option>
                 </select>
               </div>
+              {resource.imageUrl && (
+                <div className="mt-3">
+                                    <img 
+                    src={resource.imageUrl} 
+                    alt={resource.name}
+                    className="w-full h-32 object-cover rounded-md"
+                    onLoad={() => console.log('DEBUG: Image loaded successfully:', resource.imageUrl)}
+                    onError={(e) => {
+                      console.log('DEBUG: Image failed to load:', resource.imageUrl);
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
