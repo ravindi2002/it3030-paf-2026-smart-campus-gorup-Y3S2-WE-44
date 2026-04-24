@@ -74,7 +74,7 @@ export default function Dashboard() {
           <div className="flex gap-4">
             
             <Link
-              to="/resources"
+              to="/student/resources"
               className="bg-gradient-to-r from-blue-500 to-indigo-600 px-5 py-2 rounded-lg font-semibold shadow hover:scale-105 transition"
             >
               Explore Resources
@@ -107,7 +107,7 @@ export default function Dashboard() {
         <div className="bg-white shadow-md rounded-2xl p-6 hover:shadow-xl transition transform hover:-translate-y-1 animate-fadeInUp" style={{ animationDelay: '0.7s', opacity: 0 }}>
           <h3 className="text-gray-500 text-sm uppercase">Resources</h3>
           <p className="text-4xl font-bold text-blue-600 mt-2">{stats.resources}</p>
-          <Link to="/resources" className="text-blue-500 text-sm mt-2 inline-block hover:underline">
+          <Link to="/student/resources" className="text-blue-500 text-sm mt-2 inline-block hover:underline">
             View all →
           </Link>
         </div>
@@ -149,7 +149,7 @@ export default function Dashboard() {
               <span className="font-medium">Book a Resource</span>
             </Link>
             <Link
-              to="/resources"
+              to="/student/resources"
               className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition"
             >
               <span className="text-2xl">📦</span>

@@ -17,7 +17,13 @@ export default function OAuthCallback() {
         localStorage.setItem('smartcampus_token', token);
         localStorage.setItem('smartcampus_user', JSON.stringify(userData));
         console.log('OAuthCallback - Stored user data:', JSON.parse(localStorage.getItem('smartcampus_user') || '{}'));
-        navigate('/admin/dashboard');
+        
+        // Redirect based on user role
+        if (userData.role === 'ADMIN') {
+          navigate('/admin/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       } catch (err) {
         console.error('Failed to parse user data:', err);
         navigate('/login?error=oauth_failed');

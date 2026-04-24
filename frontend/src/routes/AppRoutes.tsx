@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../pages/Dashboard';
 import Resources from '../pages/Resources';
+import StudentResources from '../pages/StudentResources';
 import CreateResource from '../pages/CreateResource';
 import EditResource from '../pages/EditResource';
 import Bookings from '../pages/Bookings';
@@ -19,8 +20,10 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/resources" element={<Resources />} />
+      <Route path="/student/resources" element={<StudentResources />} />
       <Route path="/resources/create" element={<CreateResource />} />
       <Route path="/resources/edit/:id" element={<EditResource />} />
       <Route path="/bookings" element={<Bookings />} />
