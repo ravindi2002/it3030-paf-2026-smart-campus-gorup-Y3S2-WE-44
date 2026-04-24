@@ -12,7 +12,7 @@ export default function ManageUsers() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/users');
+      const res = await api.get('/users/all');
       setUsers(res.data);
     } catch (error) {
       console.error('Failed to fetch users:', error);

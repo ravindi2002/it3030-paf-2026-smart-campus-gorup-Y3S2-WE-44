@@ -54,6 +54,12 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> users = userService.getAll();
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserDTO>> getAll(@RequestParam(required = false) RoleType role) {

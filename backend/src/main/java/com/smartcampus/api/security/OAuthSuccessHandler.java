@@ -78,7 +78,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private boolean isAdminEmail(String email) {
-        String adminEmails = System.getProperty("admin.emails", "admin@smartcampus.com,admin@gmail.com,ravindisasanika12@gmail.com");
-        return adminEmails.contains(email);
+        String adminEmails = "ravindisasanika12@gmail.com,hansanipoornima0809@gmail.com,ireshawarani@gmail.com";
+        return adminEmails.contains(email.toLowerCase());
     }
 }
