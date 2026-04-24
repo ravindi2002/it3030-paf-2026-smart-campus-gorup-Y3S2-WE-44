@@ -43,6 +43,17 @@ export default function CreateResource() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
+      <div className="flex items-center mb-6">
+        <button
+          onClick={() => navigate('/resources')}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Resources
+        </button>
+      </div>
       <h1 className="text-2xl font-bold mb-6">Add New Resource</h1>
       
       <div className="bg-white p-6 rounded-lg shadow">
