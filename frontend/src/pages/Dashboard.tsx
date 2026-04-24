@@ -24,13 +24,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     Promise.all([
-<<<<<<< HEAD
       api.get('/resources'),
       api.get('/bookings'),
-=======
-      api.get('/admin/resources/public/resources'),
-      api.get('/admin/bookings/public/bookings'),
->>>>>>> origin/feature/facilities-management
       api.get('/tickets'),
     ]).then(([resources, bookings, tickets]) => {
       setStats({
@@ -43,9 +38,7 @@ export default function Dashboard() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Hero Section with Auto-changing Slides */}
       <div className="relative rounded-2xl overflow-hidden mb-8" style={{ height: '320px' }}>
-        {/* Background Image Slideshow */}
         {heroImages.map((img, index) => (
           <div
             key={index}
@@ -57,50 +50,33 @@ export default function Dashboard() {
             }}
           />
         ))}
-
-        {/* Dark overlay */}
         <div className="absolute inset-0 bg-black/50"></div>
-
-        {/* Floating blur circles */}
         <div className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
         <div className="absolute bottom-10 right-10 w-40 h-40 bg-blue-400/20 rounded-full blur-3xl"></div>
-
-        {/* Content */}
         <div className="relative z-10 flex flex-col justify-center px-10 text-white h-full">
-          
           <h1 className="text-4xl md:text-5xl font-extrabold mb-3 animate-fadeIn">
             Smart Uni
           </h1>
-
           <p className="text-lg opacity-90 max-w-xl mb-6">
             Manage resources, bookings, and maintenance efficiently in one place.
           </p>
-
           <div className="flex gap-4">
-            
             <Link
-<<<<<<< HEAD
               to="/resources"
-=======
-              to="/student/resources"
->>>>>>> origin/feature/facilities-management
               className="bg-gradient-to-r from-blue-500 to-indigo-600 px-5 py-2 rounded-lg font-semibold shadow hover:scale-105 transition"
             >
               Explore Resources
             </Link>
-
             <Link
               to="/tickets/create"
               className="border border-white px-5 py-2 rounded-lg hover:bg-white hover:text-black transition"
             >
               Report Issue
             </Link>
-
           </div>
         </div>
       </div>
 
-      {/* About Campus Section */}
       <div className="bg-white shadow-md rounded-2xl p-6 mb-8 animate-fadeInUp" style={{ animationDelay: '0.6s', opacity: 0 }}>
         <h2 className="text-2xl font-bold mb-3">About Smart Campus</h2>
         <p className="text-gray-600 leading-relaxed">
@@ -111,16 +87,11 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white shadow-md rounded-2xl p-6 hover:shadow-xl transition transform hover:-translate-y-1 animate-fadeInUp" style={{ animationDelay: '0.7s', opacity: 0 }}>
           <h3 className="text-gray-500 text-sm uppercase">Resources</h3>
           <p className="text-4xl font-bold text-blue-600 mt-2">{stats.resources}</p>
-<<<<<<< HEAD
           <Link to="/resources" className="text-blue-500 text-sm mt-2 inline-block hover:underline">
-=======
-          <Link to="/student/resources" className="text-blue-500 text-sm mt-2 inline-block hover:underline">
->>>>>>> origin/feature/facilities-management
             View all →
           </Link>
         </div>
@@ -142,7 +113,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Actions + Recent Activity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white shadow-md rounded-2xl p-6 animate-fadeInLeft" style={{ animationDelay: '1s', opacity: 0 }}>
           <h3 className="font-semibold mb-4 text-lg">Quick Actions</h3>
@@ -162,11 +132,7 @@ export default function Dashboard() {
               <span className="font-medium">Book a Resource</span>
             </Link>
             <Link
-<<<<<<< HEAD
               to="/resources"
-=======
-              to="/student/resources"
->>>>>>> origin/feature/facilities-management
               className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition"
             >
               <span className="text-2xl">📦</span>
