@@ -121,18 +121,8 @@ public class ResourceController {
         return ResponseEntity.noContent().build();
     }
 
-    // Temporary test endpoint without role restrictions
-    @DeleteMapping("/{id}/test")
-    public ResponseEntity<Void> deleteTest(@PathVariable Long id, Authentication authentication) {
-        System.out.println("DEBUG: Deleting resource " + id + " with user: " + (authentication != null ? authentication.getName() : "null"));
-        System.out.println("DEBUG: User authorities: " + (authentication != null ? authentication.getAuthorities() : "null"));
-        
-        resourceService.delete(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    // Public endpoints for students
-    @GetMapping("/public/resources")
+    // Public endpoints for students - /api/resources
+    @GetMapping("/resources")
     public ResponseEntity<List<ResourceDTO>> getPublicResources(
             @RequestParam(required = false) ResourceStatus status) {
         List<ResourceDTO> resources = status != null
@@ -141,11 +131,30 @@ public class ResourceController {
         return ResponseEntity.ok(resources);
     }
 
-    @GetMapping("/public/resources/search")
+    @GetMapping("/resources/search")
     public ResponseEntity<List<ResourceDTO>> searchPublicResources(
             @RequestParam(required = false) String type,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer capacity) {
+        List<ResourceDTO> resources = resourceService.search(type, location, capacity);
+        return ResponseEntity.ok(resources);
+    }
+
+    // Legacy public endpoint
+    @GetMapping("/public/resources")
+    public ResponseEntity<List<ResourceDTO>> getPublicResourcesLegacy(
+            @RequestParam(required = false) ResourceStatus status) {
+        List<ResourceDTO> resources = status != null
+                ? resourceService.getByStatus(status)
+                : resourceService.getAll();
+        return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/public/resources/search")
+    public ResponseEntity<List<ResourceDTO>> searchPublicResourcesLegacy(
+            @RequestParam(required = false) String type,
             @RequestParam(required = false) String location) {
-        List<ResourceDTO> resources = resourceService.search(type, location);
+        List<ResourceDTO> resources = resourceService.search(type, location, null);
         return ResponseEntity.ok(resources);
     }
 }

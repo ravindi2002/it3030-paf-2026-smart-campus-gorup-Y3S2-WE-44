@@ -1,3 +1,5 @@
+export type ResourceStatus = 'ACTIVE' | 'OUT_OF_SERVICE';
+
 export interface Resource {
   id?: number;
   name: string;

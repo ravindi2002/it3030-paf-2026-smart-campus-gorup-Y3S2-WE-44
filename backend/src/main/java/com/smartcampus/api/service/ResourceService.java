@@ -103,9 +103,9 @@ public class ResourceService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResourceDTO> search(String type, String location) {
+    public List<ResourceDTO> search(String type, String location, Integer capacity) {
         return resourceRepository
-                .search(type, location)
+                .search(type, location, capacity)
                 .stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());

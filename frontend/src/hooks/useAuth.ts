@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { User, RoleType } from '../types/User';
 
@@ -6,6 +7,7 @@ const TOKEN_KEY = 'smartcampus_token';
 const USER_KEY = 'smartcampus_user';
 
 export const useAuth = () => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(() => {
     const saved = localStorage.getItem(USER_KEY);
     return saved ? JSON.parse(saved) : null;
@@ -38,7 +40,8 @@ export const useAuth = () => {
     localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
-  }, []);
+    navigate('/login');
+  }, [navigate]);
 
   const isAuthenticated = useCallback(() => {
     return !!token;
