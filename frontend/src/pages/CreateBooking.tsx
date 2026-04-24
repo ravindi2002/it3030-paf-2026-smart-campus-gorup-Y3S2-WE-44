@@ -72,17 +72,55 @@ export default function CreateBooking() {
       // In a real app, you'd get the current user ID from auth context
       const currentUserId = 1; // Mock user ID
       
-      await bookingService.createBooking(booking, currentUserId);
+      console.log('Creating booking with data:', booking);
+      
+      // Format the booking data properly - remove userId and status from body
+      // Format dates to include seconds for backend LocalDateTime compatibility
+      const formatDateTimeForBackend = (dateTimeString: string) => {
+        if (!dateTimeString) return dateTimeString;
+        // Convert YYYY-MM-DDTHH:MM to YYYY-MM-DDTHH:MM:SS
+        return dateTimeString.length === 16 ? `${dateTimeString}:00` : dateTimeString;
+      };
+
+      const bookingData = {
+        resourceId: booking.resourceId,
+        startTime: formatDateTimeForBackend(booking.startTime),
+        endTime: formatDateTimeForBackend(booking.endTime),
+        purpose: booking.purpose,
+        expectedAttendees: booking.expectedAttendees
+      };
+      
+      const result = await bookingService.createBooking(bookingData, currentUserId);
+      console.log('Booking created successfully:', result);
+      
       setSuccess(true);
       
-      // Redirect to bookings list after successful creation
+      // Show success message and redirect after delay
       setTimeout(() => {
         navigate('/bookings');
-      }, 2000);
+      }, 3000);
       
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create booking');
       console.error('Error creating booking:', err);
+      let errorMessage = 'Failed to create booking';
+      
+      if (err.response) {
+        console.error('Response error:', err.response.data);
+        errorMessage = err.response.data?.message || errorMessage;
+      } else if (err.request) {
+        console.error('Request error:', err.request);
+        errorMessage = 'Network error - please check if the server is running';
+      } else {
+        console.error('General error:', err.message);
+        errorMessage = err.message || errorMessage;
+      }
+      
+      setError(errorMessage);
+      
+      // Clear error after 5 seconds
+      setTimeout(() => {
+        setError(null);
+      }, 5000);
     } finally {
       setSubmitting(false);
     }
@@ -152,18 +190,6 @@ export default function CreateBooking() {
             loading={submitting}
           />
         )}
-      </div>
-
-      {/* Help Information */}
-      <div className="mt-6 bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-medium text-blue-900 mb-2">Booking Information</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• All bookings are initially created as <strong>PENDING</strong></li>
-          <li>• Admin approval is required before the booking becomes active</li>
-          <li>• You can cancel your own bookings if they are PENDING or APPROVED</li>
-          <li>• Bookings cannot overlap for the same resource</li>
-          <li>• Start time must be in the future</li>
-        </ul>
       </div>
     </div>
   );
