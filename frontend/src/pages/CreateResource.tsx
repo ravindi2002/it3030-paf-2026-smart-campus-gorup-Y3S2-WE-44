@@ -25,12 +25,14 @@ export default function CreateResource() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setLoading(true);
 
     try {
       console.log('Creating resource with data:', formData);
       const response = await api.post('/admin/resources', formData);
       console.log('Resource created successfully:', response.data);
+      alert('Resource created successfully!');
       navigate('/admin/resources');
     } catch (error: any) {
       console.error('Error creating resource:', error);
