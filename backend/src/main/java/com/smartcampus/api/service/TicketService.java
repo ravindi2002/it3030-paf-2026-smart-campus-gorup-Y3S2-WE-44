@@ -223,6 +223,13 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
+    public List<TicketResponseDTO> getByUserIdAndStatus(Long userId, TicketStatus status) {
+        return ticketRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, status).stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<TicketResponseDTO> getByAssignedToId(Long technicianId) {
         return ticketRepository.findByAssignedToIdOrderByCreatedAtDesc(technicianId).stream()
                 .map(this::mapToResponseDTO)

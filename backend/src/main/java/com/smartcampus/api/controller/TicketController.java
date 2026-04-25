@@ -383,7 +383,10 @@ public class TicketController {
             @RequestParam(required = false) Long assignedToId) {
         List<TicketResponseDTO> tickets;
         
-        if (userId != null) {
+        if (userId != null && status != null) {
+            // Filter by both userId and status
+            tickets = ticketService.getByUserIdAndStatus(userId, status);
+        } else if (userId != null) {
             tickets = ticketService.getByUserId(userId);
         } else if (status != null) {
             tickets = ticketService.getByStatus(status);
