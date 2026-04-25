@@ -31,7 +31,7 @@ export default function CreateResource() {
       console.log('Creating resource with data:', formData);
       const response = await api.post('/admin/resources', formData);
       console.log('Resource created successfully:', response.data);
-      navigate('/resources');
+      navigate('/admin/resources');
     } catch (error: any) {
       console.error('Error creating resource:', error);
       console.error('Error details:', error.response?.data);
@@ -45,7 +45,7 @@ export default function CreateResource() {
     <div className="p-6 max-w-2xl mx-auto">
       <div className="flex items-center mb-6">
         <button
-          onClick={() => navigate('/resources')}
+          onClick={() => navigate('/admin/resources')}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@ export default function CreateResource() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/resources')}
+              onClick={() => navigate('/admin/resources')}
               className="bg-gray-200 text-gray-800 px-6 py-2 rounded-md hover:bg-gray-300"
             >
               Cancel

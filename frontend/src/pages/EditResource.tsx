@@ -52,7 +52,7 @@ export default function EditResource() {
       console.log('Updating resource with data:', formData);
       const response = await api.put(`/admin/resources/${id}`, formData);
       console.log('Resource updated successfully:', response.data);
-      navigate('/resources');
+      navigate('/admin/resources');
     } catch (error: any) {
       console.error('Error updating resource:', error);
       console.error('Error details:', error.response?.data);
