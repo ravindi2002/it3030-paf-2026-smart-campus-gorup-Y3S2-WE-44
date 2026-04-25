@@ -25,7 +25,7 @@ export const useAuth = () => {
       const userData = { 
         username: data.username, 
         role: data.role || RoleType.USER,
-        id: data.id
+        id: data.userId || data.id
       };
       localStorage.setItem(USER_KEY, JSON.stringify(userData));
       setToken(data.token);
