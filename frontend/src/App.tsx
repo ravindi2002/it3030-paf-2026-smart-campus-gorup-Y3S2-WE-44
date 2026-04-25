@@ -116,10 +116,12 @@ export default function App() {
                 {isAdmin ? (
                   // Admin sidebar - only management links
                   <>
+                    <Link to="/admin" style={navLinkStyle(isActive('/admin'))}>🏠 Dashboard</Link>
                     <Link to="/admin/resources" style={navLinkStyle(isActive('/admin/resources') || isActive('/resources'))}>📦 Manage Resources</Link>
                     <Link to="/admin/tickets" style={navLinkStyle(isActive('/admin/tickets'))}>🎫 Manage Tickets</Link>
                     <Link to="/admin/users" style={navLinkStyle(isActive('/admin/users'))}>👥 Manage Users</Link>
                     <Link to="/admin/bookings" style={navLinkStyle(isActive('/admin/bookings'))}>📅 Manage Bookings</Link>
+                    <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📋 All Bookings</Link>
                   </>
                 ) : (
                   // Regular user sidebar
@@ -128,6 +130,7 @@ export default function App() {
                     <Link to="/tickets" style={navLinkStyle(isActive('/tickets'))}>🎫 My Tickets</Link>
                     <Link to="/resources" style={navLinkStyle(isActive('/resources'))}>📦 Resources</Link>
                     <Link to="/bookings/create" style={navLinkStyle(isActive('/bookings/create'))}>📅 Book Resource</Link>
+                    <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📋 My Bookings</Link>
                     <Link to="/notifications" style={navLinkStyle(isActive('/notifications'))}>🔔 Notifications</Link>
                   </>
                 )}

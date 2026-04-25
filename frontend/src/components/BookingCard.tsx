@@ -6,6 +6,8 @@ interface BookingCardProps {
   onCancel?: (id: number) => void;
   onApprove?: (id: number) => void;
   onReject?: (id: number, reason?: string) => void;
+  onEdit?: (id: number) => void;
+  onDelete?: (id: number) => void;
   isAdmin?: boolean;
   currentUserId?: number;
 }
@@ -28,7 +30,9 @@ export default function BookingCard({
   booking, 
   onCancel, 
   onApprove, 
-  onReject, 
+  onReject,
+  onEdit,
+  onDelete,
   isAdmin = false,
   currentUserId 
 }: BookingCardProps) {
@@ -121,6 +125,28 @@ export default function BookingCard({
             className="px-3 py-1 bg-gray-500 text-white text-sm rounded hover:bg-gray-600 transition-colors"
           >
             Cancel
+          </button>
+        )}
+        
+        {canCancel && onEdit && (
+          <button
+            onClick={() => onEdit(booking.id)}
+            className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+          >
+            Edit
+          </button>
+        )}
+        
+        {canCancel && onDelete && (
+          <button
+            onClick={() => {
+              if (confirm('Are you sure you want to delete this booking?')) {
+                onDelete(booking.id);
+              }
+            }}
+            className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600 transition-colors"
+          >
+            Delete
           </button>
         )}
         

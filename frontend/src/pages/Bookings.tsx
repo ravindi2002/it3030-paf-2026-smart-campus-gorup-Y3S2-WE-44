@@ -67,6 +67,30 @@ export default function Bookings() {
     }
   };
 
+  const handleEdit = (id: number) => {
+    navigate(`/bookings/${id}?edit=true`);
+  };
+
+  const handleUpdate = async (id: number, data: any) => {
+    try {
+      await bookingService.updateBooking(id, data);
+      await fetchBookings();
+    } catch (err) {
+      setError('Failed to update booking');
+      console.error('Error updating booking:', err);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await bookingService.deleteBooking(id);
+      await fetchBookings();
+    } catch (err) {
+      setError('Failed to delete booking');
+      console.error('Error deleting booking:', err);
+    }
+  };
+
   const clearFilters = () => {
     setFilters({});
   };
@@ -198,6 +222,8 @@ export default function Bookings() {
                   onCancel={handleCancel}
                   onApprove={handleApprove}
                   onReject={handleReject}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                   isAdmin={isAdmin()}
                   currentUserId={user?.id || 0}
                 />

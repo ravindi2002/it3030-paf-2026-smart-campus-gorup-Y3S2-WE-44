@@ -62,16 +62,17 @@ export default function Layout({ children }: LayoutProps) {
               <Link to="/tickets/create" style={navLinkStyle(isActive('/tickets/create'))}>🚨 Report Issue</Link>
               <Link to="/tickets" style={navLinkStyle(isActive('/tickets'))}>🎫 My Tickets</Link>
               <Link to="/resources" style={navLinkStyle(isActive('/resources'))}>📦 Resources</Link>
-              <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📅 Bookings</Link>
-              <Link to="/bookings/create" style={navLinkStyle(isActive('/bookings/create'))}>➕ New Booking</Link>
+              <Link to="/bookings/create" style={navLinkStyle(isActive('/bookings/create'))}>📅 Book Resource</Link>
+              <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📋 My Bookings</Link>
               <Link to="/notifications" style={navLinkStyle(isActive('/notifications'))}>🔔 Notifications</Link>
               
               {isAdmin && (
                 <>
                   <p style={{ fontSize: '12px', opacity: 0.7, marginTop: '24px', marginBottom: '8px' }}>ADMIN</p>
-                  <Link to="/admin" style={navLinkStyle(isActive('/admin'))}>⚙️ Dashboard</Link>
+                  <Link to="/admin" style={navLinkStyle(isActive('/admin'))}>🏠 Dashboard</Link>
                   <Link to="/admin/tickets" style={navLinkStyle(isActive('/admin/tickets'))}>🎫 Manage Tickets</Link>
                   <Link to="/admin/users" style={navLinkStyle(isActive('/admin/users'))}>👥 Manage Users</Link>
+                  <Link to="/admin/bookings" style={navLinkStyle(isActive('/admin/bookings'))}>📅 Manage Bookings</Link>
                 </>
               )}
 
