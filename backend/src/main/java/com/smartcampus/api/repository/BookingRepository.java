@@ -17,7 +17,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByResourceIdAndStatus(Long resourceId, BookingStatus status);
     
     @Query("SELECT b FROM Booking b WHERE b.resource.id = :resourceId AND b.status = 'APPROVED' " +
-           "AND ((b.startTime BETWEEN :start AND :end) OR (b.endTime BETWEEN :start AND :end))")
+           "AND b.startTime < :end AND b.endTime > :start")
     List<Booking> findConflictingBookings(@Param("resourceId") Long resourceId,
                                          @Param("start") LocalDateTime start,
                                          @Param("end") LocalDateTime end);

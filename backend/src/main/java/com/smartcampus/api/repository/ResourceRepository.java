@@ -15,9 +15,10 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findByCreatedById(Long userId);
     @Query("""
         SELECT r FROM Resource r
-        WHERE (:type IS NULL OR LOWER(r.resourceType) LIKE LOWER(CONCAT('%', :type, '%')))
+        WHERE (:name IS NULL OR LOWER(r.name) LIKE LOWER(CONCAT('%', :name, '%')))
+        AND (:type IS NULL OR LOWER(r.resourceType) LIKE LOWER(CONCAT('%', :type, '%')))
         AND (:location IS NULL OR LOWER(r.location) LIKE LOWER(CONCAT('%', :location, '%')))
         AND (:capacity IS NULL OR r.capacity >= :capacity)
         """)
-    List<Resource> search(String type, String location, Integer capacity);
+    List<Resource> search(String name, String type, String location, Integer capacity);
 }

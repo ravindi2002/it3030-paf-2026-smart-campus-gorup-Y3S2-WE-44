@@ -26,4 +26,8 @@ public class TicketRequestDTO {
     private String location;
 
     private String imageUrl;
+
+    private String preferredContact;
+
+    private Long resourceId;
 }

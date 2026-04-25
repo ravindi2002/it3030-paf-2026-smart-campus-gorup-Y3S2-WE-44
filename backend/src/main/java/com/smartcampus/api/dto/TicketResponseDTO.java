@@ -14,34 +14,29 @@ import java.util.List;
 public class TicketResponseDTO {
 
     private Long id;
-
     private String title;
-
     private String description;
-
     private TicketStatus status;
-
     private Priority priority;
-
     private String category;
-
     private String location;
-
     private String imageUrl;
+    private String preferredContact;
+    private String resolutionNotes;
+    private String rejectionReason;
+    private Long resourceId;
 
     private Long userId;
-
     private String userName;
 
     private Long assignedToId;
-
     private String assignedToName;
 
     private List<CommentDTO> comments;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
-
     private LocalDateTime resolvedAt;
+    private LocalDateTime closedAt;
+    private LocalDateTime assignedAt;
 }

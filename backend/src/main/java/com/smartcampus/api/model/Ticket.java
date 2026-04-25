@@ -54,9 +54,25 @@ public class Ticket {
     @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
+    @Column(name = "preferred_contact")
+    private String preferredContact;
+
+    @Column(name = "resolution_notes", columnDefinition = "TEXT")
+    private String resolutionNotes;
+
+    @Column(name = "rejection_reason", columnDefinition = "TEXT")
+    private String rejectionReason;
+
+    @Column(name = "resource_id")
+    private Long resourceId;
+
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<Comment> comments = new HashSet<>();
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<TicketImage> images = new HashSet<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -66,6 +82,12 @@ public class Ticket {
 
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
+
+    @Column(name = "closed_at")
+    private LocalDateTime closedAt;
+
+    @Column(name = "assigned_at")
+    private LocalDateTime assignedAt;
 
     @PrePersist
     protected void onCreate() {
