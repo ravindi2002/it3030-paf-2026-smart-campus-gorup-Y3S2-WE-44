@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { Resource } from '../types/Resource';
 
@@ -61,6 +62,9 @@ export default function StudentResources() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 m-4">
+        ← Back to Home
+      </Link>
       {/* Header Section */}
       <div className="p-6">
         <div className="mb-8">

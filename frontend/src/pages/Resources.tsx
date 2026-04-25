@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { useAuth } from '../hooks/useAuth';
 
@@ -19,6 +20,7 @@ const OUT_OF_SERVICE = 'OUT_OF_SERVICE';
 export default function Resources() {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchName, setSearchName] = useState('');
   const [searchType, setSearchType] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
   const [searchCapacity, setSearchCapacity] = useState('');
@@ -30,12 +32,13 @@ export default function Resources() {
     setLoading(true);
     try {
       const params = new URLSearchParams();
+      if (searchName) params.append('name', searchName);
       if (searchType) params.append('type', searchType);
       if (searchLocation) params.append('location', searchLocation);
       if (searchCapacity) params.append('capacity', searchCapacity);
       
       const query = params.toString();
-      const url = query ? `/resources/search?${query}` : '/resources';
+      const url = query ? `/admin/resources/search?${query}` : '/admin/resources';
       const res = await api.get(url);
       setResources(res.data);
     } catch (error) {
@@ -75,12 +78,15 @@ export default function Resources() {
 
   return (
     <div className="p-6">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Resources</h1>
         {canManage && (
-          <a href="/resources/create" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          <Link to="/resources/create" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
             Add Resource
-          </a>
+          </Link>
         )}
       </div>
 
@@ -90,8 +96,8 @@ export default function Resources() {
             type="text"
             placeholder="Search by name..."
             className="border p-2 rounded"
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
           />
           <select
             className="border p-2 rounded"
@@ -103,6 +109,9 @@ export default function Resources() {
             <option value="LAB">Lab</option>
             <option value="MEETING_ROOM">Meeting Room</option>
             <option value="EQUIPMENT">Equipment</option>
+            <option value="SPORTS">Sports Facility</option>
+            <option value="LIBRARY">Library</option>
+            <option value="AUDITORIUM">Auditorium</option>
           </select>
           <input
             type="text"
@@ -157,12 +166,12 @@ export default function Resources() {
                   >
                     {r.status === ACTIVE ? 'Mark Out of Service' : 'Mark Active'}
                   </button>
-                  <a
-                    href={`/resources/edit/${r.id}`}
+                  <Link
+                    to={`/resources/edit/${r.id}`}
                     className="bg-gray-600 text-white px-3 py-1 rounded text-sm hover:bg-gray-700"
                   >
                     Edit
-                  </a>
+                  </Link>
                   <button
                     onClick={() => handleDelete(r.id)}
                     className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600"

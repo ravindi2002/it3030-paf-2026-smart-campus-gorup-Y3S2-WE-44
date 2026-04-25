@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import { Resource } from '../types/Resource';
 
@@ -29,7 +29,7 @@ export default function CreateResource() {
 
     try {
       console.log('Creating resource with data:', formData);
-      const response = await api.post('/admin/resources/test', formData);
+      const response = await api.post('/admin/resources', formData);
       console.log('Resource created successfully:', response.data);
       navigate('/resources');
     } catch (error: any) {
