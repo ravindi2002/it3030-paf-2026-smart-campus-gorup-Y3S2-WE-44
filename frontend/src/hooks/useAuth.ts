@@ -22,7 +22,11 @@ export const useAuth = () => {
     try {
       const data = await authService.login(username, password);
       localStorage.setItem(TOKEN_KEY, data.token);
-      const userData = { username: data.username, role: data.role || RoleType.USER };
+      const userData = { 
+        username: data.username, 
+        role: data.role || RoleType.USER,
+        id: data.id
+      };
       localStorage.setItem(USER_KEY, JSON.stringify(userData));
       setToken(data.token);
       setUser(userData as User);

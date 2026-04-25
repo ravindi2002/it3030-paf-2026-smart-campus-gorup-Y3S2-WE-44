@@ -16,7 +16,7 @@ export const bookingService = {
       if (filters?.startDate) params.append('startDate', filters.startDate);
       if (filters?.endDate) params.append('endDate', filters.endDate);
       
-      const response = await api.get(`/bookings?${params.toString()}`);
+      const response = await api.get(`/admin/admin/bookings?${params.toString()}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching bookings:', error);
@@ -47,7 +47,7 @@ export const bookingService = {
   // Get booking by ID
   async getBookingById(id: number): Promise<Booking> {
     try {
-      const response = await api.get(`/bookings/${id}`);
+      const response = await api.get(`/admin/bookings/${id}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching booking:', error);
@@ -69,7 +69,7 @@ export const bookingService = {
   async createBooking(booking: BookingRequest, userId: number): Promise<Booking> {
     try {
       console.log('Creating booking with:', { booking, userId });
-      const response = await api.post(`/bookings?userId=${userId}`, booking);
+      const response = await api.post(`/admin/admin/bookings?userId=${userId}`, booking);
       console.log('Booking created successfully:', response.data);
       return response.data;
     } catch (error: any) {
@@ -106,14 +106,14 @@ export const bookingService = {
 
   // Update booking
   async updateBooking(id: number, booking: Partial<BookingRequest>): Promise<Booking> {
-    const response = await api.put(`/bookings/${id}`, booking);
+    const response = await api.put(`/admin/bookings/${id}`, booking);
     return response.data;
   },
 
   // Approve booking (Admin only)
   async approveBooking(id: number, approvedById?: number): Promise<Booking> {
     const params = approvedById ? `?approvedById=${approvedById}` : '';
-    const response = await api.put(`/bookings/${id}/approve${params}`);
+    const response = await api.put(`/admin/bookings/${id}/approve${params}`);
     return response.data;
   },
 
@@ -123,25 +123,25 @@ export const bookingService = {
     if (approvedById) params.append('approvedById', approvedById.toString());
     if (rejectionReason) params.append('rejectionReason', rejectionReason);
     
-    const response = await api.put(`/bookings/${id}/reject?${params.toString()}`);
+    const response = await api.put(`/admin/bookings/${id}/reject?${params.toString()}`);
     return response.data;
   },
 
   // Cancel booking
   async cancelBooking(id: number, userId: number): Promise<Booking> {
-    const response = await api.put(`/bookings/${id}/cancel?userId=${userId}`);
+    const response = await api.put(`/admin/bookings/${id}/cancel?userId=${userId}`);
     return response.data;
   },
 
   // Delete booking
   async deleteBooking(id: number): Promise<void> {
-    await api.delete(`/bookings/${id}`);
+    await api.delete(`/admin/bookings/${id}`);
   },
 
   // Get bookings by user ID
   async getBookingsByUserId(userId: number): Promise<Booking[]> {
     try {
-      const response = await api.get(`/bookings?userId=${userId}`);
+      const response = await api.get(`/admin/bookings?userId=${userId}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching bookings by user ID:', error);
@@ -158,7 +158,7 @@ export const bookingService = {
   // Get bookings by resource ID
   async getBookingsByResourceId(resourceId: number): Promise<Booking[]> {
     try {
-      const response = await api.get(`/bookings?resourceId=${resourceId}`);
+      const response = await api.get(`/admin/bookings?resourceId=${resourceId}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching bookings by resource ID:', error);
@@ -175,7 +175,7 @@ export const bookingService = {
   // Get bookings by status
   async getBookingsByStatus(status: BookingStatus): Promise<Booking[]> {
     try {
-      const response = await api.get(`/bookings?status=${status}`);
+      const response = await api.get(`/admin/bookings?status=${status}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching bookings by status:', error);
@@ -191,7 +191,7 @@ export const bookingService = {
 
   // Get bookings by date range
   async getBookingsByDateRange(startDate: string, endDate: string): Promise<Booking[]> {
-    const response = await api.get(`/bookings?startDate=${startDate}&endDate=${endDate}`);
+    const response = await api.get(`/admin/bookings?startDate=${startDate}&endDate=${endDate}`);
     return response.data;
   },
 
@@ -202,7 +202,7 @@ export const bookingService = {
     endDate: string
   ): Promise<Booking[]> {
     const response = await api.get(
-      `/bookings?resourceId=${resourceId}&startDate=${startDate}&endDate=${endDate}`
+      `/admin/bookings?resourceId=${resourceId}&startDate=${startDate}&endDate=${endDate}`
     );
     return response.data;
   }

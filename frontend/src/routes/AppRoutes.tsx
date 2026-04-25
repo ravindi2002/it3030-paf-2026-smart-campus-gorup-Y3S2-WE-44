@@ -10,32 +10,47 @@ import TicketDetails from '../pages/TicketDetails';
 import ManageTickets from '../pages/ManageTickets';
 import ManageUsers from '../pages/ManageUsers';
 import AdminDashboard from '../pages/AdminDashboard';
+import AdminResources from '../pages/AdminResources';
+import AdminManageTickets from '../pages/AdminManageTickets';
+import AdminManageUsers from '../pages/AdminManageUsers';
+import AdminManageBookings from '../pages/AdminManageBookings';
 import Notifications from '../pages/Notifications';
 import Login from '../pages/Login';
 import OAuthCallback from '../pages/OAuthCallback';
 import ProtectedRoute from './ProtectedRoute';
 import { RoleType } from '../types/User';
+import EditResource from '../pages/EditResource';
 
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Public routes - NO AUTH NEEDED */}
       <Route path="/" element={<Dashboard />} />
       <Route path="/login" element={<Login />} />
       <Route path="/oauth-callback" element={<OAuthCallback />} />
+      
+      {/* Public ticket view (accessed via QR scan) */}
+      <Route path="/tickets/public/:id" element={<TicketDetails />} />
+      
+      {/* Create ticket with pre-filled resource (via QR scan) - PUBLIC */}
+      <Route path="/tickets/create" element={<CreateTicket />} />
+
+      {/* Protected routes - AUTH REQUIRED */}
       <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
       <Route path="/resources/create" element={<ProtectedRoute><CreateResource /></ProtectedRoute>} />
       <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
       <Route path="/bookings/create" element={<ProtectedRoute><CreateBooking /></ProtectedRoute>} />
       <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
-      <Route path="/tickets/create" element={<ProtectedRoute><CreateTicket /></ProtectedRoute>} />
       <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       
       {/* Admin routes */}
       <Route path="/admin" element={<ProtectedRoute role={RoleType.ADMIN}><AdminDashboard /></ProtectedRoute>} />
-      <Route path="/admin/tickets" element={<ProtectedRoute role={RoleType.ADMIN}><ManageTickets /></ProtectedRoute>} />
-      <Route path="/admin/users" element={<ProtectedRoute role={RoleType.ADMIN}><ManageUsers /></ProtectedRoute>} />
-      <Route path="/admin/resources" element={<ProtectedRoute role={RoleType.ADMIN}><CreateResource /></ProtectedRoute>} />
+      <Route path="/admin/resources" element={<ProtectedRoute role={RoleType.ADMIN}><AdminResources /></ProtectedRoute>} />
+      <Route path="/admin/tickets" element={<ProtectedRoute role={RoleType.ADMIN}><AdminManageTickets /></ProtectedRoute>} />
+      <Route path="/admin/users" element={<ProtectedRoute role={RoleType.ADMIN}><AdminManageUsers /></ProtectedRoute>} />
+      <Route path="/admin/bookings" element={<ProtectedRoute role={RoleType.ADMIN}><AdminManageBookings /></ProtectedRoute>} />
+      <Route path="/resources/edit/:id" element={<ProtectedRoute role={RoleType.ADMIN}><EditResource /></ProtectedRoute>} />
     </Routes>
   );
 }
