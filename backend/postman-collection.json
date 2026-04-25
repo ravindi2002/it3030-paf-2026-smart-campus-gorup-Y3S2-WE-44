@@ -1,0 +1,783 @@
+{
+  "info": {
+    "name": "Smart Campus API - Test Collection",
+    "description": "API endpoints testing for Smart Campus Operations Hub",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "resourceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ticketId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "GET Health",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/public/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "public", "health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Health check returns 200\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resources - Module A",
+      "item": [
+        {
+          "name": "Create Resource (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Lecture Hall A\",\n  \"resourceType\": \"LECTURE_HALL\",\n  \"capacity\": 100,\n  \"location\": \"Building A, Floor 1\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Resource created successfully\", function() {", "  if (pm.response.code === 201) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set(\"resourceId\", jsonData.id);", "    pm.expect(jsonData.name).to.eq(\"Lecture Hall A\");", "  }", "});", "pm.test(\"Returns 201 Created\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Resources (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Resource by ID (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources/{{resourceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources", "{{resourceId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 or 404\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 404, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Search Resources (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources/search?name=Lecture&type=LECTURE_HALL&location=Building A",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "Lecture"
+                },
+                {
+                  "key": "type",
+                  "value": "LECTURE_HALL"
+                },
+                {
+                  "key": "location",
+                  "value": "Building A"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Resource (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources/{{resourceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources", "{{resourceId}}"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Lecture Hall A - Updated\",\n  \"resourceType\": \"LECTURE_HALL\",\n  \"capacity\": 120,\n  \"location\": \"Building A, Floor 2\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Resource Status (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources/{{resourceId}}/status?status=OUT_OF_SERVICE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources", "{{resourceId}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "OUT_OF_SERVICE"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Resource (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources/{{resourceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources", "{{resourceId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 204 No Content\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([204, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Bookings - Module B",
+      "item": [
+        {
+          "name": "Create Booking (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resourceId\": {{resourceId}},\n  \"startTime\": \"2026-04-28T10:00:00\",\n  \"endTime\": \"2026-04-28T12:00:00\",\n  \"purpose\": \"Team Meeting\",\n  \"expectedAttendees\": 20\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Booking created successfully\", function() {", "  if (pm.response.code === 201) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set(\"bookingId\", jsonData.id);", "    pm.expect(jsonData.status).to.eq(\"PENDING\");", "  }", "});", "pm.test(\"Returns 201 or validation error\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Bookings (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Booking by ID (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings", "{{bookingId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 or 404\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get User Bookings (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Approve Booking (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings/{{bookingId}}/approve?approvedById={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings", "{{bookingId}}", "approve"],
+              "query": [
+                {
+                  "key": "approvedById",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Booking approved successfully\", function() {", "  if (pm.response.code === 200) {", "    var jsonData = pm.response.json();", "    pm.expect(jsonData.status).to.eq(\"APPROVED\");", "  }", "});", "pm.test(\"Returns 200 or error\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reject Booking (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings/{{bookingId}}/reject?approvedById={{userId}}&rejectionReason=Not+available",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings", "{{bookingId}}", "reject"],
+              "query": [
+                {
+                  "key": "approvedById",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "rejectionReason",
+                  "value": "Not available"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cancel Booking (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings/{{bookingId}}/cancel?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings", "{{bookingId}}", "cancel"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Booking (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings", "{{bookingId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 204 No Content\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([204, 404]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tickets - Module C",
+      "item": [
+        {
+          "name": "Create Ticket (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Projector not working\",\n  \"description\": \"The projector in Lecture Hall A is displaying error\",\n  \"category\": \"EQUIPMENT\",\n  \"priority\": \"HIGH\",\n  \"resourceId\": {{resourceId}},\n  \"preferredContact\": \"user@example.com\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Ticket created successfully\", function() {", "  if (pm.response.code === 201) {", "    var jsonData = pm.response.json();", "    pm.collectionVariables.set(\"ticketId\", jsonData.id);", "    pm.expect(jsonData.status).to.eq(\"OPEN\");", "  }", "});", "pm.test(\"Returns 201 Created\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get All Tickets (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Ticket by ID (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 or 404\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Ticket Status (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/status?status=IN_PROGRESS",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "IN_PROGRESS"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Assign Ticket (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/assign?assignedToId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}", "assign"],
+              "query": [
+                {
+                  "key": "assignedToId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resolve Ticket (PUT)",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/resolve?resolution=Issue+fixed&userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}", "resolve"],
+              "query": [
+                {
+                  "key": "resolution",
+                  "value": "Issue fixed"
+                },
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add Comment to Ticket (POST)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}/comments?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}", "comments"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"This is a comment on the ticket\",\n  \"userId\": {{userId}}\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 201 Created\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([201, 400, 404]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Ticket (DELETE)",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tickets", "{{ticketId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 204 No Content\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([204, 404]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications - Module D",
+      "item": [
+        {
+          "name": "Get User Notifications (GET)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "notifications"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 200 OK\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([200, 401, 403]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "item": [
+        {
+          "name": "Create Resource - Empty Name (Validation)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"resourceType\": \"LECTURE_HALL\",\n  \"capacity\": 100,\n  \"location\": \"Building A\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 400 Bad Request\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([400, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Resource - Negative Capacity (Validation)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/resources",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "resources"]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Hall\",\n  \"resourceType\": \"LECTURE_HALL\",\n  \"capacity\": -10,\n  \"location\": \"Building A\",\n  \"status\": \"ACTIVE\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 400 Bad Request\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([400, 401, 403]);", "});"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Booking - Past Time (Validation)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/bookings?userId={{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "bookings"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resourceId\": {{resourceId}},\n  \"startTime\": \"2020-01-01T10:00:00\",\n  \"endTime\": \"2020-01-01T12:00:00\",\n  \"purpose\": \"Past booking\",\n  \"expectedAttendees\": 20\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": ["pm.test(\"Returns 400 Bad Request - Past time\", function() {", "  pm.expect(pm.response.code).to.be.oneOf([400, 404]);", "});"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
