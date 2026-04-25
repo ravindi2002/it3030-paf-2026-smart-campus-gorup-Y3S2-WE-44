@@ -34,6 +34,7 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
         validateBookingTimes(dto);
+        validateCapacity(dto, resource);
         validateNoConflict(dto.getResourceId(), dto.getStartTime(), dto.getEndTime());
 
         Booking booking = Booking.builder()
@@ -165,6 +166,14 @@ public class BookingService {
         }
         if (dto.getExpectedAttendees() != null && dto.getExpectedAttendees() <= 0) {
             throw new ValidationException("Expected attendees must be greater than 0");
+        }
+    }
+
+    private void validateCapacity(BookingDTO dto, Resource resource) {
+        if (dto.getExpectedAttendees() != null && resource.getCapacity() != null) {
+            if (dto.getExpectedAttendees() > resource.getCapacity()) {
+                throw new ValidationException("Expected attendees exceeds resource capacity of " + resource.getCapacity());
+            }
         }
     }
 

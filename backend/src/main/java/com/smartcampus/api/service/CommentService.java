@@ -2,9 +2,11 @@ package com.smartcampus.api.service;
 
 import com.smartcampus.api.dto.CommentDTO;
 import com.smartcampus.api.exception.ResourceNotFoundException;
+import com.smartcampus.api.exception.ValidationException;
 import com.smartcampus.api.model.Comment;
 import com.smartcampus.api.model.Ticket;
 import com.smartcampus.api.model.User;
+import com.smartcampus.api.enums.RoleType;
 import com.smartcampus.api.repository.CommentRepository;
 import com.smartcampus.api.repository.TicketRepository;
 import com.smartcampus.api.repository.UserRepository;
@@ -30,6 +32,10 @@ public class CommentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
+        if (ticket.getStatus() == com.smartcampus.api.enums.TicketStatus.CLOSED) {
+            throw new ValidationException("Cannot add comments to a closed ticket");
+        }
+        
         Comment comment = Comment.builder()
                 .content(dto.getContent())
                 .ticket(ticket)
@@ -40,12 +46,24 @@ public class CommentService {
         return mapToDTO(saved);
     }
 
-    public CommentDTO update(Long id, CommentDTO dto) {
+    public CommentDTO update(Long id, CommentDTO dto, Long userId) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+        
+        validateOwnershipOrAdmin(comment, userId);
+        
         comment.setContent(dto.getContent());
         Comment updated = commentRepository.save(comment);
         return mapToDTO(updated);
+    }
+
+    public void delete(Long id, Long userId) {
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+        
+        validateOwnershipOrAdmin(comment, userId);
+        
+        commentRepository.delete(comment);
     }
 
     @Transactional(readOnly = true)
@@ -55,11 +73,16 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
-        if (!commentRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Comment not found");
+    private void validateOwnershipOrAdmin(Comment comment, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        
+        boolean isOwner = comment.getUser().getId().equals(userId);
+        boolean isAdmin = user.getRole() == RoleType.ADMIN;
+        
+        if (!isOwner && !isAdmin) {
+            throw new ValidationException("You can only edit or delete your own comments");
         }
-        commentRepository.deleteById(id);
     }
 
     private CommentDTO mapToDTO(Comment comment) {
