@@ -10,6 +10,8 @@ import com.smartcampus.api.enums.RoleType;
 import com.smartcampus.api.repository.CommentRepository;
 import com.smartcampus.api.repository.TicketRepository;
 import com.smartcampus.api.repository.UserRepository;
+import com.smartcampus.api.dto.NotificationDTO;
+import com.smartcampus.api.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public CommentDTO create(CommentDTO dto, Long userId) {
         Ticket ticket = ticketRepository.findById(dto.getTicketId())
@@ -43,6 +46,10 @@ public class CommentService {
                 .build();
         
         Comment saved = commentRepository.save(comment);
+        
+        // Send notification to ticket owner about new comment
+        sendCommentNotification(ticket, user);
+        
         return mapToDTO(saved);
     }
 
@@ -94,5 +101,31 @@ public class CommentService {
                 .userName(comment.getUser().getFullName())
                 .createdAt(comment.getCreatedAt())
                 .build();
+    }
+
+    private void sendCommentNotification(Ticket ticket, User commenter) {
+        try {
+            // Don't notify if the commenter is the ticket owner
+            if (ticket.getUser() != null && ticket.getUser().getId().equals(commenter.getId())) {
+                return;
+            }
+            
+            String title = "New Comment on Your Ticket";
+            String message = String.format("%s commented on your ticket #%d",
+                commenter.getFullName(), 
+                ticket.getId());
+
+            NotificationDTO notification = NotificationDTO.builder()
+                    .userId(ticket.getUser() != null ? ticket.getUser().getId() : null)
+                    .title(title)
+                    .message(message)
+                    .notificationType("TICKET_COMMENT")
+                    .referenceId(ticket.getId())
+                    .build();
+
+            notificationService.create(notification);
+        } catch (Exception e) {
+            System.err.println("Failed to send comment notification: " + e.getMessage());
+        }
     }
 }

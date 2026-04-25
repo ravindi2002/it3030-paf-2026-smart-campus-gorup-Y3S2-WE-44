@@ -10,6 +10,8 @@ import com.smartcampus.api.model.User;
 import com.smartcampus.api.repository.BookingRepository;
 import com.smartcampus.api.repository.ResourceRepository;
 import com.smartcampus.api.repository.UserRepository;
+import com.smartcampus.api.dto.NotificationDTO;
+import com.smartcampus.api.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final ResourceRepository resourceRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     public BookingDTO create(BookingDTO dto, Long userId) {
         User user = userRepository.findById(userId)
@@ -79,6 +82,10 @@ public class BookingService {
         }
 
         Booking updated = bookingRepository.save(booking);
+        
+        // Send notification to user about booking approval/rejection
+        sendBookingNotification(updated, status, rejectionReason);
+        
         return mapToDTO(updated);
     }
 
@@ -213,5 +220,43 @@ public class BookingService {
                 .updatedAt(booking.getUpdatedAt())
                 .approvedBy(booking.getApprovedBy())
                 .build();
+    }
+
+    private void sendBookingNotification(Booking booking, BookingStatus status, String rejectionReason) {
+        try {
+            String title;
+            String message;
+            String notificationType = "BOOKING_" + status.name();
+
+            if (status == BookingStatus.APPROVED) {
+                title = "Booking Approved";
+                message = String.format("Your booking for %s has been approved.", 
+                    booking.getResource() != null ? booking.getResource().getName() : "the resource");
+            } else if (status == BookingStatus.REJECTED) {
+                title = "Booking Rejected";
+                message = String.format("Your booking for %s has been rejected. Reason: %s",
+                    booking.getResource() != null ? booking.getResource().getName() : "the resource",
+                    rejectionReason != null ? rejectionReason : "Not specified");
+            } else if (status == BookingStatus.CANCELLED) {
+                title = "Booking Cancelled";
+                message = String.format("Your booking for %s has been cancelled.",
+                    booking.getResource() != null ? booking.getResource().getName() : "the resource");
+            } else {
+                return;
+            }
+
+            NotificationDTO notification = NotificationDTO.builder()
+                    .userId(booking.getUser() != null ? booking.getUser().getId() : null)
+                    .title(title)
+                    .message(message)
+                    .notificationType(notificationType)
+                    .referenceId(booking.getId())
+                    .build();
+
+            notificationService.create(notification);
+        } catch (Exception e) {
+            // Log but don't fail the booking operation
+            System.err.println("Failed to send booking notification: " + e.getMessage());
+        }
     }
 }

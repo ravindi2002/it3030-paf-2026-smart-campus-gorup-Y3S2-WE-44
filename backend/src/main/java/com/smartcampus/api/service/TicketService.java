@@ -10,6 +10,8 @@ import com.smartcampus.api.model.Ticket;
 import com.smartcampus.api.model.User;
 import com.smartcampus.api.repository.TicketRepository;
 import com.smartcampus.api.repository.UserRepository;
+import com.smartcampus.api.dto.NotificationDTO;
+import com.smartcampus.api.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     private static final Map<String, List<String>> ALLOWED_TRANSITIONS = Map.of(
             "OPEN", List.of("IN_PROGRESS", "REJECTED"),
@@ -88,6 +91,7 @@ public class TicketService {
         
         validateStatusTransition(ticket.getStatus(), newStatus);
         
+        TicketStatus oldStatus = ticket.getStatus();
         ticket.setStatus(newStatus);
         
         if (newStatus == TicketStatus.IN_PROGRESS) {
@@ -101,6 +105,10 @@ public class TicketService {
         }
         
         Ticket updated = ticketRepository.save(ticket);
+        
+        // Send notification to user about ticket status change
+        sendTicketStatusNotification(updated, oldStatus, newStatus, reason);
+        
         return mapToResponseDTO(updated);
     }
 
@@ -284,5 +292,60 @@ public class TicketService {
                 .closedAt(ticket.getClosedAt())
                 .assignedAt(ticket.getAssignedAt())
                 .build();
+    }
+
+    private void sendTicketStatusNotification(Ticket ticket, TicketStatus oldStatus, TicketStatus newStatus, String reason) {
+        try {
+            String title;
+            String message;
+            String notificationType = "TICKET_" + newStatus.name();
+
+            switch (newStatus) {
+                case IN_PROGRESS:
+                    title = "Ticket Under Review";
+                    message = String.format("Your ticket #%d (%s) is now being looked at.", 
+                        ticket.getId(), ticket.getTitle());
+                    break;
+                case RESOLVED:
+                    title = "Ticket Resolved";
+                    message = String.format("Your ticket #%d (%s) has been resolved. %s", 
+                        ticket.getId(), ticket.getTitle(),
+                        ticket.getResolutionNotes() != null ? "Notes: " + ticket.getResolutionNotes() : "");
+                    break;
+                case CLOSED:
+                    title = "Ticket Closed";
+                    message = String.format("Your ticket #%d (%s) has been closed.", 
+                        ticket.getId(), ticket.getTitle());
+                    break;
+                case REJECTED:
+                    title = "Ticket Rejected";
+                    message = String.format("Your ticket #%d (%s) has been rejected. Reason: %s", 
+                        ticket.getId(), ticket.getTitle(), reason != null ? reason : "Not specified");
+                    break;
+                case OPEN:
+                    if (oldStatus == TicketStatus.REJECTED || oldStatus == TicketStatus.CLOSED) {
+                        title = "Ticket Reopened";
+                        message = String.format("Your ticket #%d (%s) has been reopened.", 
+                            ticket.getId(), ticket.getTitle());
+                    } else {
+                        return;
+                    }
+                    break;
+                default:
+                    return;
+            }
+
+            NotificationDTO notification = NotificationDTO.builder()
+                    .userId(ticket.getUser() != null ? ticket.getUser().getId() : null)
+                    .title(title)
+                    .message(message)
+                    .notificationType(notificationType)
+                    .referenceId(ticket.getId())
+                    .build();
+
+            notificationService.create(notification);
+        } catch (Exception e) {
+            System.err.println("Failed to send ticket notification: " + e.getMessage());
+        }
     }
 }
