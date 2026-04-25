@@ -52,7 +52,8 @@ export const useAuth = () => {
   }, [token]);
 
   const isAdmin = useCallback(() => {
-    return user?.role === RoleType.ADMIN;
+    const role = user?.role;
+    return role === RoleType.ADMIN || role === 'ADMIN' || role === 'RoleType.ADMIN';
   }, [user]);
 
   return { user, token, loading, error, login, logout, isAuthenticated, isAdmin };
