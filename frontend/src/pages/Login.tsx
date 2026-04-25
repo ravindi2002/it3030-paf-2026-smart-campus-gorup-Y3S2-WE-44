@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 
 const styles = {
   gradientBackground: {
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0ea5e9 100%)',
     minHeight: '100vh',
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
   },
