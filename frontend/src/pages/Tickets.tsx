@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import Layout from '../components/Layout';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Tickets() {
   const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchTickets();
-  }, [filter]);
+  }, [filter, user]);
 
   const fetchTickets = async () => {
     try {
@@ -18,6 +21,11 @@ export default function Tickets() {
       
       if (filter !== 'all') {
         params.status = filter;
+      }
+      
+      // Filter by current user if logged in
+      if (user?.id) {
+        params.userId = user.id;
       }
       
       const response = await api.get('/tickets', { params });
