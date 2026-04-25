@@ -113,6 +113,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div>

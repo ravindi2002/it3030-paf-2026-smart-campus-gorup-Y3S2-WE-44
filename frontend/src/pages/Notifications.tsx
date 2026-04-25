@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { notificationService } from '../services/notificationService';
 import { formatDate } from '../utils/formatDate';
 import { useAuth } from '../hooks/useAuth';
@@ -19,6 +20,9 @@ export default function Notifications() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       <h1 className="text-2xl font-bold mb-6">Notifications</h1>
       {loading ? (
         <p>Loading...</p>
