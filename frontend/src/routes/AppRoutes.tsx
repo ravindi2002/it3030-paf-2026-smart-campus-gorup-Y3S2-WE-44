@@ -20,6 +20,7 @@ import OAuthCallback from '../pages/OAuthCallback';
 import ProtectedRoute from './ProtectedRoute';
 import { RoleType } from '../types/User';
 import EditResource from '../pages/EditResource';
+import BookingDetails from '../pages/BookingDetails';
 
 export default function AppRoutes() {
   return (
@@ -40,6 +41,7 @@ export default function AppRoutes() {
       <Route path="/resources/create" element={<ProtectedRoute><CreateResource /></ProtectedRoute>} />
       <Route path="/bookings" element={<ProtectedRoute><Bookings /></ProtectedRoute>} />
       <Route path="/bookings/create" element={<ProtectedRoute><CreateBooking /></ProtectedRoute>} />
+      <Route path="/bookings/:id" element={<ProtectedRoute><BookingDetails /></ProtectedRoute>} />
       <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
       <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />

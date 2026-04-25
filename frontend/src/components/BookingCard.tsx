@@ -1,4 +1,5 @@
 import { Booking, BookingStatus } from '../types/Booking';
+import { Link } from 'react-router-dom';
 
 interface BookingCardProps {
   booking: Booking;
@@ -107,6 +108,13 @@ export default function BookingCard({
 
       {/* Action Buttons */}
       <div className="flex space-x-2">
+        <Link
+          to={`/bookings/${booking.id}`}
+          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+        >
+          View Details
+        </Link>
+        
         {canCancel && onCancel && (
           <button
             onClick={() => onCancel(booking.id)}

@@ -70,10 +70,10 @@ export default function CreateBooking() {
       
       setSuccess(true);
       
-      // Show success message and redirect after delay
+      // Navigate to booking details after short delay
       setTimeout(() => {
-        navigate('/bookings');
-      }, 3000);
+        navigate(`/bookings/${result.id}`);
+      }, 1500);
       
     } catch (err: any) {
       console.error('Error creating booking:', err);
