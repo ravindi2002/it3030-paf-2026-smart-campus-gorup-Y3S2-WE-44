@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import BookingForm from '../components/BookingForm';
 import { bookingService } from '../services/bookingService';
 import { Booking, BookingRequest, Resource } from '../types/Booking';
+import api from '../utils/api';
 
 export default function EditBooking() {
   const { id } = useParams<{ id: string }>();
@@ -24,58 +25,18 @@ export default function EditBooking() {
       setLoading(true);
       setError(null);
       
-      // Fetch both booking details and available resources
-      const [bookingData, resourcesData] = await Promise.all([
-        bookingService.getBookingById(parseInt(id)),
-        fetchResources()
-      ]);
+      const bookingData = await bookingService.getBookingById(parseInt(id!));
+      const res = await api.get('/admin/resources');
+      const activeResources = res.data.filter((r: any) => r.status === 'ACTIVE');
       
       setBooking(bookingData);
-      setResources(resourcesData);
+      setResources(activeResources);
     } catch (err) {
       setError('Failed to fetch booking data');
       console.error('Error fetching booking:', err);
     } finally {
       setLoading(false);
     }
-  };
-
-  const fetchResources = async (): Promise<Resource[]> => {
-    // Mock resources data - in a real app, you'd fetch from resources API
-    return [
-      {
-        id: 1,
-        name: 'Lecture Hall A',
-        type: 'Lecture Hall',
-        capacity: 150,
-        location: 'Building 1, Floor 2',
-        status: 'ACTIVE'
-      },
-      {
-        id: 2,
-        name: 'Computer Lab 101',
-        type: 'Computer Lab',
-        capacity: 30,
-        location: 'Building 2, Floor 1',
-        status: 'ACTIVE'
-      },
-      {
-        id: 3,
-        name: 'Meeting Room B',
-        type: 'Meeting Room',
-        capacity: 12,
-        location: 'Building 3, Floor 3',
-        status: 'ACTIVE'
-      },
-      {
-        id: 4,
-        name: 'Projector Room C',
-        type: 'Equipment Room',
-        capacity: 5,
-        location: 'Building 1, Floor 1',
-        status: 'ACTIVE'
-      }
-    ];
   };
 
   const handleSubmit = async (bookingData: BookingRequest) => {

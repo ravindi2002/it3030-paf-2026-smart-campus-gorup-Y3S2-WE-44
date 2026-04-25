@@ -21,6 +21,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { RoleType } from '../types/User';
 import EditResource from '../pages/EditResource';
 import BookingDetails from '../pages/BookingDetails';
+import EditBooking from '../pages/EditBooking';
 
 export default function AppRoutes() {
   return (
@@ -53,6 +54,7 @@ export default function AppRoutes() {
       <Route path="/admin/users" element={<ProtectedRoute role={RoleType.ADMIN}><AdminManageUsers /></ProtectedRoute>} />
       <Route path="/admin/bookings" element={<ProtectedRoute role={RoleType.ADMIN}><AdminManageBookings /></ProtectedRoute>} />
       <Route path="/resources/edit/:id" element={<ProtectedRoute role={RoleType.ADMIN}><EditResource /></ProtectedRoute>} />
+      <Route path="/bookings/edit/:id" element={<ProtectedRoute><EditBooking /></ProtectedRoute>} />
     </Routes>
   );
 }
