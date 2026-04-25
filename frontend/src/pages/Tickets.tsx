@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
-import Layout from '../components/Layout';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Tickets() {
@@ -66,7 +65,6 @@ export default function Tickets() {
   }
 
   return (
-    <Layout>
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
@@ -157,6 +155,5 @@ export default function Tickets() {
         </div>
       )}
     </div>
-    </Layout>
   );
 }
