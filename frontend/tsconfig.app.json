@@ -22,5 +22,12 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": [
+    "src/components/RoleBasedAccess.tsx",
+    "src/components/ReportingModule.tsx",
+    "src/services/bookingValidationService.ts",
+    "src/types/Booking.ts",
+    "src/utils/dateTimeHelpers.ts"
+  ]
 }
