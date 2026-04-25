@@ -26,8 +26,9 @@ public class CommentController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CommentDTO> update(@PathVariable Long id,
-                                            @Valid @RequestBody CommentDTO dto) {
-        CommentDTO updated = commentService.update(id, dto);
+                                      @Valid @RequestBody CommentDTO dto,
+                                      @RequestParam Long userId) {
+        CommentDTO updated = commentService.update(id, dto, userId);
         return ResponseEntity.ok(updated);
     }
 
@@ -38,8 +39,9 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        commentService.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+                                  @RequestParam Long userId) {
+        commentService.delete(id, userId);
         return ResponseEntity.noContent().build();
     }
 }
