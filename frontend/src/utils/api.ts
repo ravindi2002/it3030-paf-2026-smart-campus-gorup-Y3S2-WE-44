@@ -17,7 +17,8 @@ const publicPaths = [
   '/users/register',      // Register
   '/resources',          // GET resources (public)
   '/admin/resources',     // GET resources (public)
-  '/admin/bookings'     // GET bookings (for admin dashboard)
+  '/admin/bookings',     // GET bookings (for admin dashboard)
+  '/notifications/user/'  // GET user notifications
 ];
 
 api.interceptors.request.use((config) => {
