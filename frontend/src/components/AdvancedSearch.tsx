@@ -39,7 +39,7 @@ export default function AdvancedSearch({
   });
   const [loading, setLoading] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [popularSearches] setPopularSearches] = useState<string[]>([
+  const [popularSearches] = useState<string[]>([
     'Lecture Hall',
     'Computer Lab',
     'Meeting Room',

@@ -56,7 +56,7 @@ export default function ReportingModule() {
           name: 'Weekly Utilization Report',
           type: 'utilization',
           generatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          data: { utilization: 78%, peakHours: '10:00-14:00', mostUsedResource: 'Lecture Hall A' },
+          data: { utilization: '78%', peakHours: '10:00-14:00', mostUsedResource: 'Lecture Hall A' },
           format: 'excel',
           filters: { startDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
           size: 2048,
@@ -139,12 +139,12 @@ export default function ReportingModule() {
   const getReportData = (type: Report['type']) => {
     const data = {
       daily: { totalBookings: 25, approved: 20, pending: 5, revenue: 1250 },
-      weekly: { totalBookings: 175, utilization: 78%, peakHours: '10:00-14:00' },
-      monthly: { totalBookings: 750, growth: 12%, topResource: 'Lecture Hall A' },
+      weekly: { totalBookings: 175, utilization: '78%', peakHours: '10:00-14:00' },
+      monthly: { totalBookings: 750, growth: '12%', topResource: 'Lecture Hall A' },
       custom: { customMetrics: 'User-defined analysis results' },
-      utilization: { utilization: 78%, peakHours: '10:00-14:00', mostUsedResource: 'Lecture Hall A' },
+      utilization: { utilization: '78%', peakHours: '10:00-14:00', mostUsedResource: 'Lecture Hall A' },
       user_activity: { activeUsers: 45, averageBookings: 3.2, topUser: 'John Doe' },
-      resource_performance: { efficiency: 92%, downtime: 2.3%, maintenance: 'Scheduled' }
+      resource_performance: { efficiency: '92%', downtime: '2.3%', maintenance: 'Scheduled' }
     };
     return data[type];
   };
