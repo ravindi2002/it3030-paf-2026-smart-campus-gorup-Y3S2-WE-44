@@ -42,6 +42,12 @@ public class Resource {
     @Column(name = "capacity")
     private Integer capacity;
 
+    @Column(name = "available_from")
+    private java.time.LocalTime availableFrom;
+
+    @Column(name = "available_to")
+    private java.time.LocalTime availableTo;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by")
     private User createdBy;

@@ -11,6 +11,8 @@ interface Resource {
   resourceType: string;
   status: string;
   capacity: number;
+  availableFrom?: string;
+  availableTo?: string;
   imageUrl: string;
 }
 
@@ -156,6 +158,11 @@ export default function Resources() {
               <p className="text-gray-600 text-sm mb-1">{r.resourceType}</p>
               <p className="text-gray-600 text-sm mb-1">📍 {r.location}</p>
               <p className="text-gray-600 text-sm mb-1">👥 Capacity: {r.capacity}</p>
+              {(r.availableFrom && r.availableTo) && (
+                <p className="text-gray-600 text-sm mb-1">
+                  🕒 Available: {r.availableFrom} - {r.availableTo}
+                </p>
+              )}
               {r.description && <p className="text-gray-500 text-sm mt-2">{r.description}</p>}
               
               {canManage && (

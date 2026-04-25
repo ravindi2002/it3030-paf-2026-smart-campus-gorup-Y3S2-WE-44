@@ -10,6 +10,9 @@ interface Resource {
   capacity?: number;
   description?: string;
   status: string;
+  availableFrom?: string;
+  availableTo?: string;
+  available?: boolean;
 }
 
 export default function AdminResources() {
@@ -52,7 +55,7 @@ export default function AdminResources() {
       
       setShowModal(false);
       setEditingResource(null);
-setFormData({ name: '', resourceType: '', location: '', capacity: '', description: '', status: 'ACTIVE' });
+      setFormData({ name: '', resourceType: '', location: '', capacity: '', description: '', status: 'ACTIVE' });
       fetchResources();
     } catch (err) {
       console.error('Failed to save resource');
@@ -73,11 +76,11 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
     setEditingResource(resource);
     setFormData({
       name: resource.name,
-      type: resource.type,
+      resourceType: resource.resourceType || '',
       location: resource.location,
       capacity: resource.capacity?.toString() || '',
       description: resource.description || '',
-      available: resource.available
+      status: resource.status || 'ACTIVE'
     });
     setShowModal(true);
   };
@@ -90,7 +93,7 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
           <p style={{ color: '#6b7280' }}>Add, edit, or remove campus resources</p>
         </div>
         <button
-          onClick={() => { setEditingResource(null); setFormData({ name: '', type: '', location: '', capacity: '', description: '', available: true }); setShowModal(true); }}
+          onClick={() => { setEditingResource(null); setFormData({ name: '', resourceType: '', location: '', capacity: '', description: '', status: 'ACTIVE' }); setShowModal(true); }}
           style={{ background: '#2563eb', color: 'white', padding: '12px 24px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
         >
           ➕ Add Resource
@@ -112,8 +115,8 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
                   <h3 style={{ fontWeight: 'bold', fontSize: '18px' }}>{resource.name}</h3>
-                  <span style={{ background: resource.available ? '#d1fae5' : '#fee2e2', color: resource.available ? '#065f46' : '#991b1b', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
-                    {resource.available ? '✓ Available' : '✕ Unavailable'}
+                  <span style={{ background: resource.status === 'ACTIVE' ? '#d1fae5' : '#fee2e2', color: resource.status === 'ACTIVE' ? '#065f46' : '#991b1b', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
+                    {resource.status === 'ACTIVE' ? '✓ Available' : '✕ Unavailable'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
@@ -121,8 +124,13 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
                   <button onClick={() => handleDelete(resource.id)} style={{ color: '#dc2626', background: 'none', border: 'none', cursor: 'pointer' }}>🗑️</button>
                 </div>
               </div>
-              <p style={{ color: '#6b7280', marginTop: '8px', fontSize: '14px' }}>{resource.type} • {resource.location}</p>
+              <p style={{ color: '#6b7280', marginTop: '8px', fontSize: '14px' }}>{resource.resourceType} • {resource.location}</p>
               {resource.capacity && <p style={{ color: '#6b7280', fontSize: '14px' }}>Capacity: {resource.capacity}</p>}
+              {(resource.availableFrom && resource.availableTo) && (
+                <p style={{ color: '#6b7280', fontSize: '14px' }}>
+                  Available: {resource.availableFrom} - {resource.availableTo}
+                </p>
+              )}
               {resource.description && <p style={{ color: '#9ca3af', fontSize: '14px', marginTop: '8px' }}>{resource.description}</p>}
             </div>
           ))}
@@ -143,7 +151,7 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '4px', fontWeight: 500 }}>Type *</label>
-                <select value={formData.type} onChange={e => setFormData({...formData, type: e.target.value})} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
+                <select value={formData.resourceType} onChange={e => setFormData({...formData, resourceType: e.target.value})} required style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db' }}>
                   <option value="">Select type</option>
                   <option value="Lecture Hall">Lecture Hall</option>
                   <option value="Lab">Computer Lab</option>
@@ -165,7 +173,7 @@ setFormData({ name: '', resourceType: '', location: '', capacity: '', descriptio
                 <textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} rows={3} style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db' }} />
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <input type="checkbox" checked={formData.available} onChange={e => setFormData({...formData, available: e.target.checked})} />
+                <input type="checkbox" checked={formData.status === 'ACTIVE'} onChange={e => setFormData({...formData, status: e.target.checked ? 'ACTIVE' : 'INACTIVE'})} />
                 <label>Available for booking</label>
               </div>
               <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>

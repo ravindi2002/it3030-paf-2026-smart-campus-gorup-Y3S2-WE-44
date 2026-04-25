@@ -13,6 +13,7 @@ export default function App() {
   // Handle role check - can be string or RoleType enum
   const userRole = user?.role;
   const isAdmin = userRole === 'ADMIN' || userRole === 'RoleType.ADMIN';
+  const isTechnician = userRole === 'TECHNICIAN' || userRole === 'RoleType.TECHNICIAN';
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -110,7 +111,7 @@ export default function App() {
         }}>
           {sidebarOpen && (
             <div style={{ padding: '24px 16px', color: 'white', height: '100%', overflowY: 'auto' }}>
-              <p style={{ fontSize: '12px', opacity: 0.8, marginBottom: '32px' }}>{isAdmin ? 'Admin Panel' : 'Operations Hub'}</p>
+              <p style={{ fontSize: '12px', opacity: 0.8, marginBottom: '32px' }}>{isAdmin ? 'Admin Panel' : isTechnician ? 'Staff Portal' : 'Operations Hub'}</p>
 
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {isAdmin ? (
@@ -122,6 +123,17 @@ export default function App() {
                     <Link to="/admin/users" style={navLinkStyle(isActive('/admin/users'))}>👥 Manage Users</Link>
                     <Link to="/admin/bookings" style={navLinkStyle(isActive('/admin/bookings'))}>📅 Manage Bookings</Link>
                     <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📋 All Bookings</Link>
+                  </>
+                ) : isTechnician ? (
+                  // Technician sidebar
+                  <>
+                    <Link to="/staff/dashboard" style={navLinkStyle(isActive('/staff/dashboard'))}>👷 Staff Dashboard</Link>
+                    <Link to="/tickets/create" style={navLinkStyle(isActive('/tickets/create'))}>🚨 Report Issue</Link>
+                    <Link to="/tickets" style={navLinkStyle(isActive('/tickets'))}>🎫 My Tickets</Link>
+                    <Link to="/resources" style={navLinkStyle(isActive('/resources'))}>📦 Resources</Link>
+                    <Link to="/bookings/create" style={navLinkStyle(isActive('/bookings/create'))}>📅 Book Resource</Link>
+                    <Link to="/bookings" style={navLinkStyle(isActive('/bookings'))}>📋 My Bookings</Link>
+                    <Link to="/notifications" style={navLinkStyle(isActive('/notifications'))}>🔔 Notifications</Link>
                   </>
                 ) : (
                   // Regular user sidebar

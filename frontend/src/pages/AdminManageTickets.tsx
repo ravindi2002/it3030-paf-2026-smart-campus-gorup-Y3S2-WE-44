@@ -22,6 +22,7 @@ interface User {
   fullName?: string;
   email?: string;
   role: string;
+  availability?: string;
 }
 
 export default function AdminManageTickets() {
@@ -29,6 +30,7 @@ export default function AdminManageTickets() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [selectedTechnician, setSelectedTechnician] = useState<number | null>(null);
@@ -47,7 +49,7 @@ export default function AdminManageTickets() {
       
       const [ticketsRes, usersRes] = await Promise.all([
         api.get('/tickets', { params }),
-        api.get('/admin/users')
+        api.get('/users/all')
       ]);
       
       setTickets(ticketsRes.data || []);
@@ -138,8 +140,17 @@ export default function AdminManageTickets() {
         <p style={{ color: '#6b7280' }}>View and manage all reported tickets</p>
       </div>
 
-      {/* Filters */}
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+      {/* Search and Filters */}
+      <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <input 
+          type="text" 
+          placeholder="Search by ticket ID, title, or user..." 
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #d1d5db', width: '300px' }}
+        />
+        
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {['all', 'OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED', 'REJECTED'].map(status => (
           <button
             key={status}
@@ -157,6 +168,7 @@ export default function AdminManageTickets() {
             {status === 'all' ? '📋 All' : status}
           </button>
         ))}
+        </div>
       </div>
 
       {loading ? (
@@ -168,7 +180,12 @@ export default function AdminManageTickets() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {tickets.map(ticket => (
+          {tickets.filter(t => 
+            t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            t.id.toString().includes(searchQuery) ||
+            t.userName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            t.description.toLowerCase().includes(searchQuery.toLowerCase())
+          ).map(ticket => (
             <div key={ticket.id} style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                 <div>
@@ -232,9 +249,23 @@ export default function AdminManageTickets() {
               style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #d1d5db', marginBottom: '16px' }}
             >
               <option value="">Select technician</option>
-              {technicians.map(t => (
-                <option key={t.id} value={t.id}>{t.username} ({t.fullName})</option>
-              ))}
+              {technicians.map(t => {
+                const getAvailabilityEmoji = (status?: string) => {
+                  switch(status) {
+                    case 'AVAILABLE': return '🟢';
+                    case 'BUSY': return '🔴';
+                    case 'ON_LEAVE': return '🟡';
+                    case 'OFF_DUTY': return '⚪';
+                    default: return '❓';
+                  }
+                };
+                
+                return (
+                  <option key={t.id} value={t.id}>
+                    {getAvailabilityEmoji(t.availability)} {t.username} ({t.fullName}) - {t.availability || 'UNKNOWN'}
+                  </option>
+                );
+              })}
             </select>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button onClick={handleAssign} disabled={!selectedTechnician} style={{ flex: 1, background: '#2563eb', color: 'white', padding: '12px', borderRadius: '6px', border: 'none', cursor: 'pointer' }}>

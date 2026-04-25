@@ -1,6 +1,7 @@
 package com.smartcampus.api.dto;
 
 import com.smartcampus.api.enums.RoleType;
+import com.smartcampus.api.enums.StaffAvailability;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class UserDTO {
-
+ 
     private Long id;
 
     @NotBlank(message = "Username is required")
@@ -33,6 +34,8 @@ public class UserDTO {
     private String department;
 
     private RoleType role;
+
+    private StaffAvailability availability;
 
     private String profileImage;
 

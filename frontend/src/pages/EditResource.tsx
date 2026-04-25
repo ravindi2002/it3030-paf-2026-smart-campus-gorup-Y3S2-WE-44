@@ -206,6 +206,33 @@ export default function EditResource() {
                     <p className="text-xs text-gray-500 mt-1">Optional: Maximum number of people this resource can accommodate</p>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Available From
+                      </label>
+                      <input
+                        type="time"
+                        name="availableFrom"
+                        value={formData.availableFrom || ''}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Available To
+                      </label>
+                      <input
+                        type="time"
+                        name="availableTo"
+                        value={formData.availableTo || ''}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
+                  </div>
+
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Status

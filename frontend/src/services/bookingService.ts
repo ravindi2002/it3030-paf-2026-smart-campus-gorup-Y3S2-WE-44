@@ -16,7 +16,7 @@ export const bookingService = {
       if (filters?.startDate) params.append('startDate', filters.startDate);
       if (filters?.endDate) params.append('endDate', filters.endDate);
       
-      const response = await api.get(`/admin/admin/bookings?${params.toString()}`);
+      const response = await api.get(`/admin/bookings?${params.toString()}`);
       return response.data;
     } catch (error: any) {
       console.error('Error fetching bookings:', error);
@@ -69,7 +69,8 @@ export const bookingService = {
   async createBooking(booking: BookingRequest, userId: number): Promise<Booking> {
     try {
       console.log('Creating booking with:', { booking, userId });
-      const response = await api.post(`/admin/admin/bookings?userId=${userId}`, booking);
+      const payload = { ...booking, userId };
+      const response = await api.post(`/admin/bookings?userId=${userId}`, payload);
       console.log('Booking created successfully:', response.data);
       return response.data;
     } catch (error: any) {

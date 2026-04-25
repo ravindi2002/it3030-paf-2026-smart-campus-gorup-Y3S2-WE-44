@@ -23,7 +23,7 @@ export default function AdminManageUsers() {
 
   const fetchUsers = async () => {
     try {
-      const res = await api.get('/admin/users');
+      const res = await api.get('/users/all');
       setUsers(res.data || []);
     } catch (err) {
       console.error('Failed to fetch users');
@@ -35,7 +35,7 @@ export default function AdminManageUsers() {
   const handleRoleChange = async () => {
     if (!selectedUser) return;
     try {
-      await api.put(`/admin/users/${selectedUser.id}/role`, null, {
+      await api.put(`/users/${selectedUser.id}/role`, null, {
         params: { role: newRole }
       });
       setShowRoleModal(false);
@@ -48,7 +48,7 @@ export default function AdminManageUsers() {
   const handleDelete = async (id: number) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
     try {
-      await api.delete(`/admin/users/${id}`);
+      await api.delete(`/users/${id}`);
       fetchUsers();
     } catch (err) {
       console.error('Failed to delete user');
@@ -57,7 +57,7 @@ export default function AdminManageUsers() {
 
   const handleToggleStatus = async (user: User) => {
     try {
-      await api.put(`/admin/users/${user.id}/toggle`, null, {
+      await api.put(`/users/${user.id}/toggle`, null, {
         params: { enabled: !user.enabled }
       });
       fetchUsers();

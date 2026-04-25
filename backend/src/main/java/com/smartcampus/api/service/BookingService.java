@@ -37,6 +37,7 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found"));
 
         validateBookingTimes(dto);
+        validateResourceAvailabilityWindow(dto, resource);
         validateCapacity(dto, resource);
         validateNoConflict(dto.getResourceId(), dto.getStartTime(), dto.getEndTime());
 
@@ -51,6 +52,10 @@ public class BookingService {
                 .build();
 
         Booking saved = bookingRepository.save(booking);
+        
+        sendBookingNotification(saved, BookingStatus.PENDING, null);
+        sendAdminNotificationForNewBooking(saved, "BOOKING_CREATED", null);
+        
         return mapToDTO(saved);
     }
 
@@ -184,6 +189,18 @@ public class BookingService {
         }
     }
 
+    private void validateResourceAvailabilityWindow(BookingDTO dto, Resource resource) {
+        if (resource.getAvailableFrom() != null && resource.getAvailableTo() != null) {
+            java.time.LocalTime bookingStartTime = dto.getStartTime().toLocalTime();
+            java.time.LocalTime bookingEndTime = dto.getEndTime().toLocalTime();
+            
+            if (bookingStartTime.isBefore(resource.getAvailableFrom()) || bookingEndTime.isAfter(resource.getAvailableTo())) {
+                throw new ValidationException(String.format("Booking time must be within resource availability window (%s - %s)",
+                        resource.getAvailableFrom().toString(), resource.getAvailableTo().toString()));
+            }
+        }
+    }
+
     private void validateNoConflict(Long resourceId, LocalDateTime startTime, LocalDateTime endTime) {
         List<Booking> conflictingBookings = bookingRepository.findConflictingBookings(resourceId, startTime, endTime);
         if (!conflictingBookings.isEmpty()) {
@@ -255,8 +272,33 @@ public class BookingService {
 
             notificationService.create(notification);
         } catch (Exception e) {
-            // Log but don't fail the booking operation
             System.err.println("Failed to send booking notification: " + e.getMessage());
+        }
+    }
+    
+    private void sendAdminNotificationForNewBooking(Booking booking, String statusType, String additionalInfo) {
+        try {
+            String title = "New Booking Request";
+            String message = String.format("New booking request for %s by %s. Time: %s - %s. Attendees: %d",
+                booking.getResource() != null ? booking.getResource().getName() : "resource",
+                booking.getUser() != null ? booking.getUser().getFullName() : "Unknown user",
+                booking.getStartTime() != null ? booking.getStartTime().toString() : "N/A",
+                booking.getEndTime() != null ? booking.getEndTime().toString() : "N/A",
+                booking.getExpectedAttendees() != null ? booking.getExpectedAttendees() : 0);
+
+            List<User> admins = userRepository.findByRole(com.smartcampus.api.enums.RoleType.ADMIN);
+            for (User admin : admins) {
+                NotificationDTO notification = NotificationDTO.builder()
+                        .userId(admin.getId())
+                        .title(title)
+                        .message(message)
+                        .notificationType("BOOKING_NEW_REQUEST")
+                        .referenceId(booking.getId())
+                        .build();
+                notificationService.create(notification);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to send admin notification: " + e.getMessage());
         }
     }
 }

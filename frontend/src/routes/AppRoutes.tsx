@@ -22,6 +22,7 @@ import { RoleType } from '../types/User';
 import EditResource from '../pages/EditResource';
 import BookingDetails from '../pages/BookingDetails';
 import EditBooking from '../pages/EditBooking';
+import StaffDashboard from '../pages/StaffDashboard';
 
 export default function AppRoutes() {
   return (
@@ -46,6 +47,9 @@ export default function AppRoutes() {
       <Route path="/tickets" element={<ProtectedRoute><Tickets /></ProtectedRoute>} />
       <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetails /></ProtectedRoute>} />
       <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+      
+      {/* Staff routes */}
+      <Route path="/staff/dashboard" element={<ProtectedRoute role={RoleType.TECHNICIAN}><StaffDashboard /></ProtectedRoute>} />
       
       {/* Admin routes */}
       <Route path="/admin" element={<ProtectedRoute role={RoleType.ADMIN}><AdminDashboard /></ProtectedRoute>} />

@@ -171,6 +171,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/resources").permitAll()
                         .requestMatchers("/api/resources/*").permitAll()
                         
+                        // 🔥 Bookings - public for viewing (GET only)
+                        .requestMatchers(HttpMethod.GET, "/api/admin/bookings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/admin/bookings/*").permitAll()
+                        
                         // Protected endpoints
                         .requestMatchers("/api/admin/**").authenticated()
                         .requestMatchers("/api/**").authenticated()

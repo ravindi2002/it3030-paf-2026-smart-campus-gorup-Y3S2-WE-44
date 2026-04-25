@@ -9,32 +9,26 @@ const api = axios.create({
 
 // Public endpoints that don't need auth token
 const publicPaths = [
-  '/tickets',              // GET tickets list (public for viewing)
-  '/tickets/',             // GET single ticket (public)
-  '/tickets/with-images', // POST create ticket (public)
-  '/tickets/public',      // Public ticket view
-  '/auth/login',           // Login
-  '/users/register',      // Register
-  '/resources',          // GET resources (public)
-  '/admin/resources',     // GET resources (public)
-  '/admin/bookings',     // GET bookings (for admin dashboard)
-  '/notifications/user/'  // GET user notifications
+  { path: '/tickets', method: 'get' },              // GET tickets list (public for viewing)
+  { path: '/tickets/', method: 'get' },             // GET single ticket (public)
+  { path: '/tickets/with-images', method: 'post' }, // POST create ticket (public)
+  { path: '/tickets/public', method: 'get' },      // Public ticket view
+  { path: '/auth/login', method: 'post' },           // Login
+  { path: '/users/register', method: 'post' },      // Register
+  { path: '/resources', method: 'get' },          // GET resources (public)
+  { path: '/admin/resources', method: 'get' },     // GET resources (public)
+  { path: '/admin/bookings', method: 'get' },     // GET bookings (for admin dashboard)
+  { path: '/notifications/user/', method: 'get' }  // GET user notifications
 ];
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('smartcampus_token');
   if (token && config.url) {
     // Check if this is a public endpoint
-    const isPublic = publicPaths.some(path => {
-      // Handle GET requests to public endpoints  
-      if (config.method === 'get' && config.url?.includes(path)) {
-        return true;
-      }
-      // Include match for other methods (POST, etc.)
-      if (config.url?.includes(path)) {
-        return true;
-      }
-      return false;
+    const isPublic = publicPaths.some(p => {
+      const matchPath = config.url?.includes(p.path);
+      const matchMethod = config.method?.toLowerCase() === p.method.toLowerCase();
+      return matchPath && matchMethod;
     });
     if (!isPublic) {
       config.headers.Authorization = `Bearer ${token}`;

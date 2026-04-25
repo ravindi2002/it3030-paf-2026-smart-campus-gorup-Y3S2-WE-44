@@ -2,6 +2,7 @@ package com.smartcampus.api.controller;
 
 import com.smartcampus.api.dto.UserDTO;
 import com.smartcampus.api.enums.RoleType;
+import com.smartcampus.api.enums.StaffAvailability;
 import com.smartcampus.api.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,14 @@ public class UserController {
         return ResponseEntity.ok(updated);
     }
 
+    @PutMapping("/{id}/availability")
+    @PreAuthorize("hasAnyRole('ADMIN', 'TECHNICIAN')")
+    public ResponseEntity<UserDTO> updateAvailability(@PathVariable Long id,
+                                                @RequestParam StaffAvailability availability) {
+        UserDTO updated = userService.updateAvailability(id, availability);
+        return ResponseEntity.ok(updated);
+    }
+
     @PatchMapping("/{id}/password")
     public ResponseEntity<UserDTO> updatePassword(@PathVariable Long id,
                                                 @RequestParam String newPassword) {
@@ -66,6 +75,12 @@ public class UserController {
         List<UserDTO> users = role != null
                 ? userService.getByRole(role)
                 : userService.getAll();
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/staff/available")
+    public ResponseEntity<List<UserDTO>> getAvailableStaff() {
+        List<UserDTO> users = userService.getByRole(RoleType.TECHNICIAN);
         return ResponseEntity.ok(users);
     }
 

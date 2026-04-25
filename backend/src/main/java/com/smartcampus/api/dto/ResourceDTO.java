@@ -30,6 +30,10 @@ public class ResourceDTO {
 
     private Integer capacity;
 
+    private java.time.LocalTime availableFrom;
+
+    private java.time.LocalTime availableTo;
+
     private Long createdById;
 
     private String createdByName;

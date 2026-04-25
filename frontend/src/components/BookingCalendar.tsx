@@ -1,289 +1,138 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Booking, BookingStatus } from '../types/Booking';
 
 interface BookingCalendarProps {
   bookings: Booking[];
-  onBookingClick?: (booking: Booking) => void;
-  onDateClick?: (date: Date) => void;
+  onDateClick?: (date: Date, dateBookings: Booking[]) => void;
 }
 
-interface CalendarDay {
-  date: Date;
-  bookings: Booking[];
-  isCurrentMonth: boolean;
-  isToday: boolean;
-}
-
-export default function BookingCalendar({ 
-  bookings, 
-  onBookingClick, 
-  onDateClick 
-}: BookingCalendarProps) {
+export default function BookingCalendar({ bookings, onDateClick }: BookingCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  const statusColors = {
-    [BookingStatus.PENDING]: 'bg-yellow-200 border-yellow-400 text-yellow-800',
-    [BookingStatus.APPROVED]: 'bg-green-200 border-green-400 text-green-800',
-    [BookingStatus.REJECTED]: 'bg-red-200 border-red-400 text-red-800',
-    [BookingStatus.CANCELLED]: 'bg-gray-200 border-gray-400 text-gray-800',
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
   };
 
-  const statusDotColors = {
-    [BookingStatus.PENDING]: 'bg-yellow-500',
-    [BookingStatus.APPROVED]: 'bg-green-500',
-    [BookingStatus.REJECTED]: 'bg-red-500',
-    [BookingStatus.CANCELLED]: 'bg-gray-500',
+  const getFirstDayOfMonth = (year: number, month: number) => {
+    return new Date(year, month, 1).getDay();
   };
 
-  // Generate calendar days
-  const calendarDays = useMemo(() => {
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
-    
-    const firstDay = new Date(year, month, 1);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
-    
-    const days: CalendarDay[] = [];
-    const today = new Date();
-    
-    for (let i = 0; i < 42; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-      
-      const dayBookings = bookings.filter(booking => {
-        const bookingDate = new Date(booking.startTime);
-        return (
-          bookingDate.getDate() === date.getDate() &&
-          bookingDate.getMonth() === date.getMonth() &&
-          bookingDate.getFullYear() === date.getFullYear()
-        );
-      });
+  const prevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
 
-      days.push({
-        date,
-        bookings: dayBookings,
-        isCurrentMonth: date.getMonth() === month,
-        isToday: 
-          date.getDate() === today.getDate() &&
-          date.getMonth() === today.getMonth() &&
-          date.getFullYear() === today.getFullYear(),
-      });
-    }
-    
-    return days;
-  }, [currentDate, bookings]);
+  const nextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
 
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    setCurrentDate(prev => {
-      const newDate = new Date(prev);
-      if (direction === 'prev') {
-        newDate.setMonth(newDate.getMonth() - 1);
-      } else {
-        newDate.setMonth(newDate.getMonth() + 1);
-      }
-      return newDate;
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const daysInMonth = getDaysInMonth(year, month);
+  const firstDay = getFirstDayOfMonth(year, month);
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const days = [];
+  for (let i = 0; i < firstDay; i++) {
+    days.push(<div key={`empty-${i}`} className="h-24 bg-gray-50 border border-gray-100 rounded-lg"></div>);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = new Date(year, month, d).toISOString().split('T')[0];
+    
+    // Find bookings for this day
+    const dayBookings = bookings.filter(b => {
+      const bookingDate = new Date(b.startTime).toISOString().split('T')[0];
+      return bookingDate === dateStr;
     });
-  };
 
-  const handleDateClick = (date: CalendarDay) => {
-    setSelectedDate(date.date);
-    onDateClick?.(date.date);
-  };
+    const isToday = new Date().toISOString().split('T')[0] === dateStr;
 
-  const formatMonth = (date: Date) => {
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      year: 'numeric' 
-    });
-  };
+    days.push(
+      <div 
+        key={`day-${d}`} 
+        className={`h-24 p-2 border rounded-lg flex flex-col relative overflow-hidden transition-all hover:shadow-md cursor-pointer
+          ${isToday ? 'border-blue-500 bg-blue-50/30' : 'border-gray-200 bg-white hover:border-blue-300'}
+        `}
+        onClick={() => onDateClick && onDateClick(new Date(year, month, d), dayBookings)}
+      >
+        <div className="flex justify-between items-start mb-1">
+          <span className={`text-sm font-semibold ${isToday ? 'text-blue-600 bg-blue-100 w-6 h-6 flex items-center justify-center rounded-full' : 'text-gray-700'}`}>
+            {d}
+          </span>
+          {dayBookings.length > 0 && (
+            <span className="text-xs bg-gray-100 text-gray-600 px-1.5 rounded-full font-medium">
+              {dayBookings.length}
+            </span>
+          )}
+        </div>
+        
+        <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-1 pr-1 custom-scrollbar">
+          {dayBookings.slice(0, 3).map((booking, idx) => {
+            let colorClass = 'bg-gray-100 text-gray-700 border-gray-200';
+            if (booking.status === BookingStatus.APPROVED) colorClass = 'bg-green-100 text-green-700 border-green-200';
+            if (booking.status === BookingStatus.PENDING) colorClass = 'bg-yellow-100 text-yellow-700 border-yellow-200';
+            if (booking.status === BookingStatus.REJECTED) colorClass = 'bg-red-100 text-red-700 border-red-200';
 
-  const getBookingCountByStatus = (dayBookings: Booking[]) => {
-    return dayBookings.reduce((acc, booking) => {
-      acc[booking.status] = (acc[booking.status] || 0) + 1;
-      return acc;
-    }, {} as Record<BookingStatus, number>);
-  };
+            return (
+              <div 
+                key={booking.id || idx} 
+                className={`text-[10px] leading-tight truncate px-1.5 py-0.5 rounded border ${colorClass}`}
+                title={`${booking.resourceName} - ${booking.userName}`}
+              >
+                {new Date(booking.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} {booking.resourceName}
+              </div>
+            );
+          })}
+          {dayBookings.length > 3 && (
+            <div className="text-[10px] text-gray-500 text-center font-medium">
+              +{dayBookings.length - 3} more
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => navigateMonth('prev')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          ←
-        </button>
-        <h2 className="text-xl font-bold text-gray-900">
-          {formatMonth(currentDate)}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <span>📅</span> Bookings Calendar
         </h2>
-        <button
-          onClick={() => navigateMonth('next')}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          →
-        </button>
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={prevMonth}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600 hover:text-gray-900"
+          >
+            ←
+          </button>
+          <span className="text-lg font-semibold w-40 text-center">
+            {monthNames[month]} {year}
+          </span>
+          <button 
+            onClick={nextMonth}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600 hover:text-gray-900"
+          >
+            →
+          </button>
+        </div>
       </div>
 
-      {/* Weekday Headers */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-3 mb-2">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="text-center text-sm font-medium text-gray-600 py-2">
+          <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
             {day}
           </div>
         ))}
       </div>
-
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((day, index) => {
-          const bookingCountByStatus = getBookingCountByStatus(day.bookings);
-          const totalBookings = day.bookings.length;
-          
-          return (
-            <div
-              key={index}
-              onClick={() => handleDateClick(day)}
-              className={`
-                min-h-[80px] p-2 border rounded-lg cursor-pointer transition-all
-                ${day.isCurrentMonth ? 'bg-white' : 'bg-gray-50'}
-                ${day.isToday ? 'border-blue-500 border-2' : 'border-gray-200'}
-                ${selectedDate?.toDateString() === day.date.toDateString() ? 'bg-blue-50' : ''}
-                hover:bg-gray-50 hover:border-gray-300
-              `}
-            >
-              {/* Date Number */}
-              <div className={`
-                text-sm font-medium mb-1
-                ${day.isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}
-                ${day.isToday ? 'text-blue-600' : ''}
-              `}>
-                {day.date.getDate()}
-              </div>
-
-              {/* Booking Indicators */}
-              {totalBookings > 0 && (
-                <div className="space-y-1">
-                  {/* Status dots */}
-                  <div className="flex space-x-1">
-                    {Object.entries(bookingCountByStatus).map(([status, count]) => (
-                      <div
-                        key={status}
-                        className={`w-2 h-2 rounded-full ${statusDotColors[status as BookingStatus]}`}
-                        title={`${count} ${status.toLowerCase()}`}
-                      />
-                    ))}
-                  </div>
-                  
-                  {/* Booking count */}
-                  <div className="text-xs text-gray-600">
-                    {totalBookings} booking{totalBookings !== 1 ? 's' : ''}
-                  </div>
-                </div>
-              )}
-
-              {/* Quick booking preview */}
-              {day.bookings.length > 0 && day.bookings.length <= 2 && (
-                <div className="mt-1 space-y-1">
-                  {day.bookings.slice(0, 2).map(booking => (
-                    <div
-                      key={booking.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onBookingClick?.(booking);
-                      }}
-                      className={`text-xs p-1 rounded truncate cursor-pointer ${statusColors[booking.status]}`}
-                      title={`${booking.resourceName} - ${booking.userName}`}
-                    >
-                      {booking.resourceName}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* More bookings indicator */}
-              {day.bookings.length > 2 && (
-                <div className="text-xs text-gray-500 mt-1">
-                  +{day.bookings.length - 2} more
-                </div>
-              )}
-            </div>
-          );
-        })}
+      
+      <div className="grid grid-cols-7 gap-3">
+        {days}
       </div>
-
-      {/* Legend */}
-      <div className="mt-6 pt-4 border-t border-gray-200">
-        <h3 className="text-sm font-medium text-gray-700 mb-2">Status Legend</h3>
-        <div className="flex flex-wrap gap-4">
-          {Object.entries(statusColors).map(([status]) => (
-            <div key={status} className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${statusDotColors[status as BookingStatus]}`}></div>
-              <span className="text-xs text-gray-600">{status}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Selected Date Details */}
-      {selectedDate && (
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            {selectedDate.toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </h3>
-          
-          {(() => {
-            const dayBookings = bookings.filter(booking => {
-              const bookingDate = new Date(booking.startTime);
-              return (
-                bookingDate.getDate() === selectedDate.getDate() &&
-                bookingDate.getMonth() === selectedDate.getMonth() &&
-                bookingDate.getFullYear() === selectedDate.getFullYear()
-              );
-            });
-
-            return dayBookings.length > 0 ? (
-              <div className="space-y-2">
-                {dayBookings.map(booking => (
-                  <div
-                    key={booking.id}
-                    onClick={() => onBookingClick?.(booking)}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${statusColors[booking.status]}`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-medium">{booking.resourceName}</div>
-                        <div className="text-sm opacity-75">{booking.userName}</div>
-                        <div className="text-xs opacity-75">
-                          {new Date(booking.startTime).toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })} - {new Date(booking.endTime).toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </div>
-                      </div>
-                      <div className="text-sm font-medium">{booking.status}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-4 text-gray-500">
-                No bookings scheduled for this date
-              </div>
-            );
-          })()}
-        </div>
-      )}
     </div>
   );
 }

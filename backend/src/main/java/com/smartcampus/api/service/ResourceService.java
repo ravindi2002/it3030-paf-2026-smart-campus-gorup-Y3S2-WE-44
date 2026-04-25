@@ -43,6 +43,8 @@ public class ResourceService {
                 .status(dto.getStatus() != null ? dto.getStatus() : ResourceStatus.ACTIVE)
                 .imageUrl(dto.getImageUrl())
                 .capacity(dto.getCapacity())
+                .availableFrom(dto.getAvailableFrom())
+                .availableTo(dto.getAvailableTo())
                 .createdBy(user)
                 .build();
         
@@ -64,6 +66,8 @@ public class ResourceService {
         }
         resource.setImageUrl(dto.getImageUrl());
         resource.setCapacity(dto.getCapacity());
+        resource.setAvailableFrom(dto.getAvailableFrom());
+        resource.setAvailableTo(dto.getAvailableTo());
         
         Resource updated = resourceRepository.save(resource);
         return mapToDTO(updated);
@@ -172,6 +176,8 @@ public class ResourceService {
                 .status(resource.getStatus())
                 .imageUrl(resource.getImageUrl())
                 .capacity(resource.getCapacity())
+                .availableFrom(resource.getAvailableFrom())
+                .availableTo(resource.getAvailableTo())
                 .createdById(resource.getCreatedBy() != null ? resource.getCreatedBy().getId() : null)
                 .createdByName(resource.getCreatedBy() != null ? resource.getCreatedBy().getFullName() : null)
                 .createdAt(resource.getCreatedAt())

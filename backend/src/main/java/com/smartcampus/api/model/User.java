@@ -1,6 +1,7 @@
 package com.smartcampus.api.model;
 
 import com.smartcampus.api.enums.RoleType;
+import com.smartcampus.api.enums.StaffAvailability;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -41,6 +42,11 @@ public class User {
     @Column(nullable = false)
     @Builder.Default
     private RoleType role = RoleType.USER;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "availability")
+    @Builder.Default
+    private StaffAvailability availability = StaffAvailability.AVAILABLE;
 
     @Column(name = "profile_image")
     private String profileImage;

@@ -9,6 +9,8 @@ export interface Resource {
   status?: 'ACTIVE' | 'OUT_OF_SERVICE';
   imageUrl?: string;
   capacity?: number;
+  availableFrom?: string;
+  availableTo?: string;
   createdById?: number;
   createdByName?: string;
   createdAt?: string;

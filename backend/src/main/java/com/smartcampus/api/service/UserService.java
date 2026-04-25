@@ -2,6 +2,7 @@ package com.smartcampus.api.service;
 
 import com.smartcampus.api.dto.UserDTO;
 import com.smartcampus.api.enums.RoleType;
+import com.smartcampus.api.enums.StaffAvailability;
 import com.smartcampus.api.exception.ResourceNotFoundException;
 import com.smartcampus.api.exception.ValidationException;
 import com.smartcampus.api.model.User;
@@ -75,6 +76,14 @@ public class UserService {
         return mapToDTO(updated);
     }
 
+    public UserDTO updateAvailability(Long id, StaffAvailability availability) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        user.setAvailability(availability);
+        User updated = userRepository.save(user);
+        return mapToDTO(updated);
+    }
+
     public UserDTO updatePassword(Long id, String newPassword) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -128,6 +137,7 @@ public class UserService {
                 .studentId(user.getStudentId())
                 .department(user.getDepartment())
                 .role(user.getRole())
+                .availability(user.getAvailability())
                 .profileImage(user.getProfileImage())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
