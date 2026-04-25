@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import BookingCard from '../components/BookingCard';
 import BookingStatusManager from '../components/BookingStatusManager';
 import { bookingService } from '../services/bookingService';
@@ -95,6 +95,9 @@ export default function BookingDetails() {
 
   return (
     <div className="p-6">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BookingForm from '../components/BookingForm';
 import { bookingService } from '../services/bookingService';
 import { BookingRequest, Resource } from '../types/Booking';
+import { useAuth } from '../hooks/useAuth';
+import api from '../utils/api';
 
 export default function CreateBooking() {
   const [resources, setResources] = useState<Resource[]>([]);
@@ -11,51 +13,17 @@ export default function CreateBooking() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
 
-  useEffect(() => {
-    fetchResources();
-  }, []);
-
+  // Fetch resources from API
   const fetchResources = async () => {
     try {
       setLoading(true);
       setError(null);
-      // Mock resources data - in a real app, you'd fetch from resources API
-      const mockResources: Resource[] = [
-        {
-          id: 1,
-          name: 'Lecture Hall A',
-          type: 'Lecture Hall',
-          capacity: 150,
-          location: 'Building 1, Floor 2',
-          status: 'ACTIVE'
-        },
-        {
-          id: 2,
-          name: 'Computer Lab 101',
-          type: 'Computer Lab',
-          capacity: 30,
-          location: 'Building 2, Floor 1',
-          status: 'ACTIVE'
-        },
-        {
-          id: 3,
-          name: 'Meeting Room B',
-          type: 'Meeting Room',
-          capacity: 12,
-          location: 'Building 3, Floor 3',
-          status: 'ACTIVE'
-        },
-        {
-          id: 4,
-          name: 'Projector Room C',
-          type: 'Equipment Room',
-          capacity: 5,
-          location: 'Building 1, Floor 1',
-          status: 'ACTIVE'
-        }
-      ];
-      setResources(mockResources);
+      const res = await api.get('/admin/resources');
+      // Only show ACTIVE resources
+      const activeResources = res.data.filter((r: any) => r.status === 'ACTIVE');
+      setResources(activeResources);
     } catch (err) {
       setError('Failed to fetch resources');
       console.error('Error fetching resources:', err);
@@ -64,13 +32,20 @@ export default function CreateBooking() {
     }
   };
 
+  useEffect(() => {
+    fetchResources();
+  }, []);
+
   const handleSubmit = async (booking: BookingRequest) => {
     try {
       setSubmitting(true);
       setError(null);
       
-      // In a real app, you'd get the current user ID from auth context
-      const currentUserId = 1; // Mock user ID
+      // Get current user ID from auth
+      if (!user?.id) {
+        setError('Please log in to create a booking');
+        return;
+      }
       
       console.log('Creating booking with data:', booking);
       
@@ -90,7 +65,7 @@ export default function CreateBooking() {
         expectedAttendees: booking.expectedAttendees
       };
       
-      const result = await bookingService.createBooking(bookingData, currentUserId);
+      const result = await bookingService.createBooking(bookingData, user.id);
       console.log('Booking created successfully:', result);
       
       setSuccess(true);
@@ -142,6 +117,9 @@ export default function CreateBooking() {
 
   return (
     <div className="p-6 max-w-2xl mx-auto">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">New Booking</h1>

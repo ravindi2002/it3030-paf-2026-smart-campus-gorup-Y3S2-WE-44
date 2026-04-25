@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BookingCard from '../components/BookingCard';
 import { bookingService } from '../services/bookingService';
 import { Booking, BookingStatus, BookingFilters } from '../types/Booking';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Bookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -10,6 +11,7 @@ export default function Bookings() {
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<BookingFilters>({});
   const navigate = useNavigate();
+  const { user, isAdmin } = useAuth();
 
   const fetchBookings = async () => {
     try {
@@ -30,10 +32,12 @@ export default function Bookings() {
   }, [filters]);
 
   const handleCancel = async (id: number) => {
+    if (!user?.id) {
+      setError('Please log in to cancel a booking');
+      return;
+    }
     try {
-      // In a real app, you'd get the current user ID from auth context
-      const currentUserId = 1; // Mock user ID
-      await bookingService.cancelBooking(id, currentUserId);
+      await bookingService.cancelBooking(id, user.id);
       await fetchBookings();
     } catch (err) {
       setError('Failed to cancel booking');
@@ -42,9 +46,9 @@ export default function Bookings() {
   };
 
   const handleApprove = async (id: number) => {
+    const adminId = user?.id || 1;
     try {
-      const approvedById = 1; // Mock admin ID
-      await bookingService.approveBooking(id, approvedById);
+      await bookingService.approveBooking(id, adminId);
       await fetchBookings();
     } catch (err) {
       setError('Failed to approve booking');
@@ -53,9 +57,9 @@ export default function Bookings() {
   };
 
   const handleReject = async (id: number, reason?: string) => {
+    const adminId = user?.id || 1;
     try {
-      const approvedById = 1; // Mock admin ID
-      await bookingService.rejectBooking(id, approvedById, reason);
+      await bookingService.rejectBooking(id, adminId, reason);
       await fetchBookings();
     } catch (err) {
       setError('Failed to reject booking');
@@ -69,6 +73,9 @@ export default function Bookings() {
 
   return (
     <div className="p-6">
+      <Link to="/" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4">
+        ← Back to Home
+      </Link>
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Bookings</h1>
@@ -191,8 +198,8 @@ export default function Bookings() {
                   onCancel={handleCancel}
                   onApprove={handleApprove}
                   onReject={handleReject}
-                  isAdmin={true} // Mock admin status
-                  currentUserId={1} // Mock current user ID
+                  isAdmin={isAdmin()}
+                  currentUserId={user?.id || 0}
                 />
               ))}
             </div>
